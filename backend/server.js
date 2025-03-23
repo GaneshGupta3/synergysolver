@@ -1,12 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const AuthenticationRouter = require("./routes/authRoutes");
 
 
 const app = express();
 require("dotenv").config();
 app.use(express.json());
 app.use(cors());
+
 
 mongoose
     .connect(process.env.MONGO_URI)
@@ -22,6 +24,8 @@ app.get("/api/hello", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Server is running on Vercel");
 });
+
+app.use("/auth", AuthenticationRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
