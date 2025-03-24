@@ -3,8 +3,6 @@ const User = require('../models/user.js')
 
 const jwtAuth = async (req, res, next) => {
     try {
-        console.log("Cookies Received:", req.cookies);  // Debugging line
-        console.log("Token Received:", req.cookies.token);  // Debugging line
 
         if (!req.cookies || !req.cookies.token) {
             return res.status(401).json({ message: "Unauthorized: No token provided" });
