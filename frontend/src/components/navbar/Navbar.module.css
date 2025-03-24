@@ -1,0 +1,75 @@
+.navbar {
+    position: fixed; /* Stays on top even when scrolling */
+    height: 80px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    z-index: 1000; /* High value to ensure it's on top */
+    padding: 1rem; 
+    color: white; 
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.navbar:hover {
+    transform: translateY(-5px); /* Slight lift effect */
+}
+
+.transparent {
+    background: transparent; /* Fully transparent */
+}
+
+.navbar h1:hover {
+    cursor: pointer;
+    color: aqua;
+    transition: color 0.3s ease, transform 0.3s ease;
+    border-bottom: 3px solid aqua;
+    transform: scale(1.1); /* Slight zoom effect */
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+    background-image: url("../../assets/blacklogo.png");
+    background-size: contain; /* Proper image scaling */
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: rotate(360deg); /* Full rotation effect */
+}
+
+.logoutDiv {
+    display: flex;
+    align-items: center;
+    font-size: x-large;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.logoutDiv:hover {
+    color: aqua;
+    border-bottom: 3px solid aqua;
+    transform: scale(1.1); /* Slight zoom effect */
+}
+
+.profileLink{
+    height: 70px;
+    width: 70px;
+    border-radius: 100%;
+    background-color: blue;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+}

@@ -1,0 +1,23 @@
+.styledButton {
+    background-color: rgba(30, 28, 28, 0.8); /* Slight transparency */
+    width: 200px;
+    height: 50px;
+    font-weight: bold;
+    font-size: x-large;
+    color: #ffffff; /* Brighter white for better contrast */
+    border: 3px solid transparent; /* Ensures gradient border is visible */
+    border-radius: 25px;
+    cursor: pointer;
+    border-image-source: linear-gradient(135deg, #d9dee0, #a770ff);
+    border-image-slice: 1;
+    transition: all 0.3s ease-in-out;
+    box-shadow: none;
+    margin: 10px;
+}
+
+.styledButton:hover {
+    background: linear-gradient(135deg, #232526, #414345); /* Dark gradient */
+    border-image-source: linear-gradient(135deg, #a770ff, #d9dee0);
+    transform: scale(1.05); /* Subtle hover effect */
+    margin: 10px;
+}

@@ -1,0 +1,21 @@
+.mainBody{
+    /* height: 100vh; */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.content{
+    color: white;
+}
+
+.leftbar,.tagsDisplay{
+    height: 100%;
+    width: 20%;
+    margin: 20px;
+}
+
+.problemDisplay{
+    width: 60%;
+    margin: 20px;
+}
