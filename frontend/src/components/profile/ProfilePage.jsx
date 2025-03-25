@@ -69,7 +69,7 @@ const ProfilePage = () => {
 
     return (
         <div className={styles.profileBody}>
-            <h1 class="text-3xl font-bold underline">Hello, {user.username}!</h1>
+            <h1 className="text-3xl font-bold underline">Hello, {user.username}!</h1>
             <div style={{ cursor: "pointer" }} onClick={handleLogout}>
                 <LogoutButton />
             </div>

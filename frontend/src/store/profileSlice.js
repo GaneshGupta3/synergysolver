@@ -35,6 +35,7 @@ const profileSlice = createSlice({
 
 export const logoutAsync = () => async (dispatch) => {
     try {
+        console.log("login out");
         await axios.post(`${API_BASE_URL}/auth/logout`, {}, { withCredentials: true }); // Ensure cookies are sent
         dispatch(authSlice.actions.logout()); // Dispatch sync logout action
     } catch (error) {

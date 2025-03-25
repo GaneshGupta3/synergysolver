@@ -16,6 +16,8 @@ const loginController = async(req ,res)=>{
         expiresIn: "1d",
     });
 
+    console.log("your cookie is : ",token);
+
     res.cookie("token", token, {
         httpOnly: true,
         secure: true, // Set to true in production (requires HTTPS)
@@ -61,6 +63,7 @@ const registerController = async(req ,res)=>{
 }
 
 const logoutController = (req , res)=>{
+    console.log("loging out");
     res.clearCookie("token", { path: "/" });
     res.json({ message: "Cookie deleted successfully" });
 }
