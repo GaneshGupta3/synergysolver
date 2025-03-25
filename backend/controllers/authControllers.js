@@ -63,7 +63,7 @@ const registerController = async(req ,res)=>{
 }
 
 const logoutController = (req, res) => {
-    console.log("Logging out");
+    console.log("Logging out - NODE_ENV:", process.env.NODE_ENV);
 
     res.clearCookie("token", {
         path: "/",
@@ -75,6 +75,7 @@ const logoutController = (req, res) => {
 
     res.json({ message: "Cookie deleted successfully" });
 };
+
 
 
 module.exports = {loginController , registerController,logoutController};
