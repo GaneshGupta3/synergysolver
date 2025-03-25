@@ -14,8 +14,16 @@ const User = require("./models/user");
 const app = express();
 require("dotenv").config();
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
 app.use(cookieParser());
+const cors = require("cors");
+
+app.use(
+    cors({
+        origin: ["https://synergysolver.vercel.app", "http://localhost:5173"], // Allow both hosted & local frontend
+        credentials: true, // Required for cookies & authentication
+    })
+);
 
 mongoose
     .connect(process.env.MONGO_URI)
