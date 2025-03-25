@@ -62,10 +62,18 @@ const registerController = async(req ,res)=>{
     }
 }
 
-const logoutController = (req , res)=>{
-    console.log("loging out");
-    res.clearCookie("token", { path: "/" });
+const logoutController = (req, res) => {
+    console.log("Logging out");
+
+    res.clearCookie("token", {
+        path: "/",
+        domain: ".synergysolver-backend.vercel.app", // Use backend domain
+        httpOnly: true,
+        secure: true,
+        sameSite: "None"  // Required for cross-site cookies
+    });
+
     res.json({ message: "Cookie deleted successfully" });
-}
+};
 
 module.exports = {loginController , registerController,logoutController};
