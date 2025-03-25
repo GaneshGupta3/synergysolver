@@ -9,6 +9,7 @@ import { Camera, User, Mail } from "lucide-react";
 import { logoutAsync } from "../../store/authSlice";
 import "../../index.css";
 import avatar from "./avatar.png";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
@@ -25,9 +26,9 @@ const ProfilePage = () => {
     useEffect(() => {
         const checkUserSession = async () => {
             try {
-                const response = await axios.get("https://synergysolver-backend.vercel.app/api/profile", {
+                const response = await axios.get(`${API_BASE_URL}/api/profile`, {
                     withCredentials: true,
-                });                
+                });
                 if (response.status === 200) {
                     dispatch(authSliceActions.login(response.data.user));
                 }

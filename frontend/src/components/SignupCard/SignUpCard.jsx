@@ -8,6 +8,7 @@ import StyledButton from "../StyledButton/StyledButton.jsx";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoEye, IoEyeOff } from "react-icons/io5";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const SignUpCard = () => {
     const username = useRef();
@@ -20,7 +21,7 @@ const SignUpCard = () => {
 
     const checkUserSession = async () => {
         try {
-            const response = await axios.get("/api/user/check-auth", {
+            const response = await axios.get(`${API_BASE_URL}/api/user/check-auth`, {
                 withCredentials: true, // Ensure cookies are sent
             });
 
@@ -74,7 +75,7 @@ const SignUpCard = () => {
 
         try {
             const res = await axios.post(
-                "/auth/register",
+                `${API_BASE_URL}/auth/register`,
                 registrationDetails,
                 {
                     withCredentials: true,

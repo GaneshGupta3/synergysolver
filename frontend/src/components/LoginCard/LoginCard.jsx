@@ -6,6 +6,7 @@ import axios from "axios";
 import { authSliceActions } from "../../store/authSlice";
 import StyledButton from "../StyledButton/StyledButton";
 import { toast } from "react-toastify";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function LoginCard() {
     const email = useRef();
@@ -16,7 +17,7 @@ function LoginCard() {
     // 🔹 Function to check if user has valid cookies
     const checkUserSession = async () => {
         try {
-            const response = await axios.get("/api/user/check-auth", {
+            const response = await axios.get(`${API_BASE_URL}/api/user/check-auth`, {
                 withCredentials: true, // Ensure cookies are sent
             });
 
@@ -42,7 +43,7 @@ function LoginCard() {
                 password: password.current.value,
             };
 
-            const response = await axios.post("/auth/login", user, {
+            const response = await axios.post(`${API_BASE_URL}/auth/login`, user, {
                 withCredentials: true,
                 headers: {
                     "Content-Type": "application/json",

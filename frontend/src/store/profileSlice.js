@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const initialState = {
     isUpdatingProfile : false,
@@ -34,7 +35,7 @@ const profileSlice = createSlice({
 
 export const logoutAsync = () => async (dispatch) => {
     try {
-        await axios.post("/auth/logout"); // Call API
+        await axios.post(`${API_BASE_URL}/auth/logout`); // Call API
         dispatch(authSlice.actions.logout()); // Dispatch sync logout action
     } catch (error) {
         console.error("Logout failed", error);
