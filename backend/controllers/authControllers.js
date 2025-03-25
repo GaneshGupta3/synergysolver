@@ -67,13 +67,14 @@ const logoutController = (req, res) => {
 
     res.clearCookie("token", {
         path: "/",
-        domain: ".synergysolver-backend.vercel.app", // Use backend domain
+        domain: process.env.NODE_ENV === "production" ? ".synergysolver-backend.vercel.app" : undefined,
         httpOnly: true,
-        secure: true,
-        sameSite: "None"  // Required for cross-site cookies
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None"
     });
 
     res.json({ message: "Cookie deleted successfully" });
 };
+
 
 module.exports = {loginController , registerController,logoutController};
