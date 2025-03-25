@@ -27,20 +27,26 @@ const ProfilePage = () => {
         const checkUserSession = async () => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/api/profile`, {
-                    withCredentials: true,
+                    withCredentials: true, // Ensure cookies are sent
                 });
                 if (response.status === 200) {
                     dispatch(authSliceActions.login(response.data.user));
                 }
             } catch (error) {
                 console.error("Session expired or unauthorized", error);
-                dispatch(authSliceActions.logout());
-                navigate("/login");
+    
+                // Instead of instantly logging out, check if it's a network issue
+                if (error.response?.status === 401) {
+                    alert("Session expired. Please log in again.");
+                    dispatch(authSliceActions.logout());
+                    navigate("/login");
+                }
             }
         };
-
+    
         checkUserSession();
     }, [dispatch, navigate]);
+    
 
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];

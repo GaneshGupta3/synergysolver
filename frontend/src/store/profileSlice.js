@@ -35,12 +35,13 @@ const profileSlice = createSlice({
 
 export const logoutAsync = () => async (dispatch) => {
     try {
-        await axios.post(`${API_BASE_URL}/auth/logout`); // Call API
+        await axios.post(`${API_BASE_URL}/auth/logout`, {}, { withCredentials: true }); // Ensure cookies are sent
         dispatch(authSlice.actions.logout()); // Dispatch sync logout action
     } catch (error) {
         console.error("Logout failed", error);
     }
 };
+
 
 export default profileSlice;
 export const profileActions = profileSlice.actions;
