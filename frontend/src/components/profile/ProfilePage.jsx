@@ -25,9 +25,9 @@ const ProfilePage = () => {
     useEffect(() => {
         const checkUserSession = async () => {
             try {
-                const response = await axios.get("/api/profile", {
+                const response = await axios.get("https://synergysolver-backend.vercel.app/api/profile", {
                     withCredentials: true,
-                });
+                });                
                 if (response.status === 200) {
                     dispatch(authSliceActions.login(response.data.user));
                 }

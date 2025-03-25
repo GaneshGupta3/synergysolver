@@ -7,30 +7,8 @@ export default defineConfig({
     plugins: [tailwindcss(), react()],
     server: {
         proxy: {
-            "/auth": {
-                target: "https://synergysolver-backend.vercel.app",
-                changeOrigin: true,
-                secure: false,
-                configure: (proxy) => {
-                    proxy.on("proxyReq", (proxyReq) => {
-                        proxyReq.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-                        proxyReq.setHeader("Pragma", "no-cache");
-                        proxyReq.setHeader("Expires", "0");
-                    });
-                },
-            },
-            "/api": {
-                target: "https://synergysolver-backend.vercel.app",
-                changeOrigin: true,
-                secure: false,
-                configure: (proxy) => {
-                    proxy.on("proxyReq", (proxyReq) => {
-                        proxyReq.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-                        proxyReq.setHeader("Pragma", "no-cache");
-                        proxyReq.setHeader("Expires", "0");
-                    });
-                },
-            },
+            "/auth": "https://synergysolver-backend.vercel.app/", // Proxying to the Express server https://synergysolver-backend.vercel.app
+            "/api": "https://synergysolver-backend.vercel.app/", // Proxying to the Express server
         },
     },
 });
