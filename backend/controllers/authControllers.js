@@ -18,7 +18,7 @@ const loginController = async(req ,res)=>{
 
     res.cookie("token", token, {
         httpOnly: true,
-        secure: false, // Set to true in production (requires HTTPS)
+        secure: true, // Set to true in production (requires HTTPS)
         sameSite: "Lax",
         maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
