@@ -19,10 +19,48 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
     cors({
-        origin: ["https://synergysolver.vercel.app", "http://localhost:5173"], // Allow both hosted & local frontend
+        origin: ["https://synergysolver.vercel.app", "http://localhost:5173" , "http://localhost:5174"], // Allow both hosted & local frontend
         credentials: true, // Required for cookies & authentication
     })
 );
+
+
+app.get("/getDetails", (req, res) => {
+  return res.json({
+    activities: [],
+    summary: {
+      caloriesOut: 4777,
+      activityCalories: 0,
+      caloriesBMR: 1883,
+      activeScore: -1,
+      steps: 0,
+      sedentaryMinutes: 1440,
+      lightlyActiveMinutes: 0,
+      fairlyActiveMinutes: 0,
+      veryActiveMinutes: 0,
+      distances: [
+        { activity: "total", distance: 0 },
+        { activity: "tracker", distance: 0 },
+        { activity: "sedentaryActive", distance: 0 },
+        { activity: "lightlyActive", distance: 0 },
+        { activity: "moderatelyActive", distance: 0 },
+        { activity: "veryActive", distance: 0 },
+        { activity: "loggedActivities", distance: 0 },
+      ],
+      marginalCalories: 2422,
+      heartRateZones: [],
+    },
+    goals: {
+      caloriesOut: 6818,
+      steps: 10000,
+      distance: 8.05,
+      floors: 10,
+      activeMinutes: 30,
+    },
+  });
+});
+
+
 
 mongoose
     .connect(process.env.MONGO_URI)
