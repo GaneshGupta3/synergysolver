@@ -27,38 +27,59 @@ app.use(
 
 app.get("/getDetails", (req, res) => {
   return res.json({
-    activities: [],
+    activities: [
+      {
+        name: "Running",
+        duration: 45, // in minutes
+        caloriesBurned: 500,
+        steps: 6000,
+        distance: 5.2, // in km
+      },
+      {
+        name: "Walking",
+        duration: 30,
+        caloriesBurned: 200,
+        steps: 3500,
+        distance: 2.8,
+      },
+    ],
     summary: {
-      caloriesOut: 4777,
-      activityCalories: 0,
-      caloriesBMR: 1883,
-      activeScore: -1,
-      steps: 0,
-      sedentaryMinutes: 1440,
-      lightlyActiveMinutes: 0,
-      fairlyActiveMinutes: 0,
-      veryActiveMinutes: 0,
+      caloriesOut: 2800,
+      activityCalories: 1200,
+      caloriesBMR: 1600,
+      activeScore: 85, // Assuming a score out of 100 based on activity level
+      steps: 12000,
+      sedentaryMinutes: 600, // 10 hours of inactivity
+      lightlyActiveMinutes: 150, // 2.5 hours
+      fairlyActiveMinutes: 90,
+      veryActiveMinutes: 60,
       distances: [
-        { activity: "total", distance: 0 },
-        { activity: "tracker", distance: 0 },
-        { activity: "sedentaryActive", distance: 0 },
-        { activity: "lightlyActive", distance: 0 },
-        { activity: "moderatelyActive", distance: 0 },
-        { activity: "veryActive", distance: 0 },
-        { activity: "loggedActivities", distance: 0 },
+        { activity: "total", distance: 8.0 },
+        { activity: "tracker", distance: 7.5 },
+        { activity: "sedentaryActive", distance: 0.5 },
+        { activity: "lightlyActive", distance: 2.0 },
+        { activity: "moderatelyActive", distance: 2.5 },
+        { activity: "veryActive", distance: 3.0 },
+        { activity: "loggedActivities", distance: 5.2 },
       ],
-      marginalCalories: 2422,
-      heartRateZones: [],
+      marginalCalories: 500,
+      heartRateZones: [
+        { zone: "Resting", min: 50, max: 65, minutes: 600 },
+        { zone: "Fat Burn", min: 70, max: 120, minutes: 90 },
+        { zone: "Cardio", min: 120, max: 150, minutes: 45 },
+        { zone: "Peak", min: 150, max: 180, minutes: 15 },
+      ],
     },
     goals: {
-      caloriesOut: 6818,
-      steps: 10000,
-      distance: 8.05,
-      floors: 10,
-      activeMinutes: 30,
+      caloriesOut: 3000,
+      steps: 15000,
+      distance: 10,
+      floors: 15,
+      activeMinutes: 90,
     },
   });
 });
+
 
 
 
