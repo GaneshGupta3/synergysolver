@@ -40,6 +40,9 @@ app.get("/getDetails", (req, res) => {
                 distance: 2.8,
             },
         ],
+        healthScore:{
+          score:85,
+        },
         summary: {
             caloriesOut: 2800,
             activityCalories: 1200,
