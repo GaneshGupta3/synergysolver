@@ -49,7 +49,7 @@ function LoginCard() {
             };
 
             const response = await axios.post(
-                `${API_BASE_URL}/auth/login`,
+                `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
                 user,
                 {
                     withCredentials: true,

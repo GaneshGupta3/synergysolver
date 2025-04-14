@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import axios from "axios";
 
 const initialState = {
@@ -31,7 +31,7 @@ const authSlice = createSlice({
 export const logoutAsync = () => async (dispatch) => {
     try {
         console.log("login out");
-        await axios.post(`${API_BASE_URL}/auth/logout`, {}, { withCredentials: true }); // Ensure cookies are sent
+        await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`, {}, { withCredentials: true }); // Ensure cookies are sent
         dispatch(authSlice.actions.logout()); // Dispatch sync logout action
     } catch (error) {
         console.error("Logout failed", error);
