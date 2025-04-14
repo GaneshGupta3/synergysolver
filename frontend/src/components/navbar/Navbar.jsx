@@ -1,64 +1,67 @@
 import React from "react";
-import styles from "./Navbar.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import StyledButton from "../StyledButton/StyledButton";
-import LogoutButton from "../Logout/LogoutButton";
 import { logoutAsync } from "../../store/authSlice";
+import logoImg from "../../assets/blacklogo.png";
+import NavLink from "../navlink/NavLink";
+import { CgProfile } from "react-icons/cg";
 
 const Navbar = ({ transparent }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { isLoggedIn } = useSelector((store) => store.authProvider);
+    const { user,isLoggedIn } = useSelector((store) => store.authProvider);
 
-    const loginRedirect = () => {
-        navigate("/login");
-    };
-    const signupRedirect = () => {
-        navigate("/signup");
-    };
-
-    const handleLogout = () => {
-        dispatch(logoutAsync()); // Calls API & updates Redux state
-        navigate("/login");
-    };
-
-    const navigateDashboard = () => {
-        navigate("/dashboard");
-    };
-
-    const navigateChatpage = () => {
-        navigate("/chatpage");
-    };
+    const loginRedirect = () => navigate("/login");
+    const signupRedirect = () => navigate("/signup");
 
     return (
         <nav
-            className={`${styles.navbar} ${
-                transparent ? styles.transparent : ""
-            }`}
+            className={`fixed text-black top-0 left-0 w-full z-50 h-20 px-6 flex items-center justify-around transition-all duration-300 bg-gradient-to-br from-gray-100 to-gray-300/80 backdrop-blur-sm shadow-lg rounded-b-2xl
+            `}
         >
-            <div className={styles.logo}></div>
-            <h1 onClick={navigateDashboard}>Dashboard</h1>
-            {isLoggedIn && <h1 onClick={navigateChatpage}>Discussion</h1>}
-            <h1>About Us</h1>
-            <h1>Problems</h1>
-            <h1>Rankings</h1>
-            <h1>Contact Us</h1>
-            {!isLoggedIn && (
-                <div>
+            {/* Logo */}
+            <div
+                className="w-[70px] h-[70px] bg-contain bg-center bg-no-repeat cursor-pointer transition-transform duration-300 hover:rotate-360"
+                style={{ backgroundImage: `url(${logoImg})` }}
+                onClick={() => navigate("/dashboard")}
+            ></div>
+
+            {/* Nav Links */}
+            <NavLink text={"DashBoard"} navigateTo={"dashboard"}></NavLink>
+
+            {isLoggedIn && (
+                <NavLink text={"discussion"} navigateTo={"chatpage"}></NavLink>
+            )}
+
+            <NavLink text={"About us"} navigateTo={"aboutus"}></NavLink>
+
+            <NavLink text={"problems"} navigateTo={"problems"}></NavLink>
+
+            <NavLink text={"rankings"} navigateTo={"rankings"}></NavLink>
+
+            <NavLink text={"Contact Us"} navigateTo={"contactus"}></NavLink>
+
+            {/* Auth Buttons */}
+            {!isLoggedIn ? (
+                <div className="flex gap-2">
                     <StyledButton
                         executeFunction={loginRedirect}
-                        displayText={"Login"}
-                    ></StyledButton>
+                        displayText="Login"
+                    />
                     <StyledButton
                         executeFunction={signupRedirect}
-                        displayText={"Signup"}
-                    >
-                        Signup
-                    </StyledButton>
+                        displayText="Signup"
+                    />
                 </div>
+            ) : (
+                <Link
+                    to={`/profile/${user._id}`}
+                    // className="w-[70px] h-[70px] rounded-full bg-blue-600 text-white flex items-center justify-center hover:scale-105 transition-all"
+                >
+                    <CgProfile size={50} />
+                </Link>
             )}
-            {isLoggedIn && <Link className={styles.profileLink} to="/profile">profile</Link>}
         </nav>
     );
 };

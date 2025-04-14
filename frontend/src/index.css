@@ -1,16 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 #root{
   display: flex;
   flex-direction: row;
 }
 
+/* Hide scrollbar but allow scroll */
+
 body{
   margin: 0px;
   background-color: white;
   color: white;
+  padding-bottom: 0rem;
+  height: 0px;
 }
 
 #root{

@@ -1,0 +1,24 @@
+<tbody>
+                        {problems.map((problem , idx) => (
+                            <tr key={problem._id} className="hover:bg-gray-100/25 transition">
+                            <td className="text-black p-3 rounded-l-xl">{idx + 1}</td>
+                            <td className="p-3 font-medium text-blue-600 cursor-pointer hover:underline">
+                              {problem.problemStatement}
+                            </td>
+                            <td className={`p-3 font-semibold ${difficultyColor[problem.difficulty]}`}>
+                              {problem.difficulty}
+                            </td>
+                            <td className="p-3 rounded-r-xl">
+                              {problem.tags.map((tag, idx) => (
+                                <span
+                                  key={idx}
+                                  className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </td>
+                          </tr>
+                          
+                        ))}
+                    </tbody>

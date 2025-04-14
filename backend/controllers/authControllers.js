@@ -30,7 +30,7 @@ const loginController = async(req ,res)=>{
 
     res.json({
         message: "Login successful!",
-        user: { email: user.email, username: user.username },
+        user: {_id: user._id, email: user.email, username: user.username },
     });
 }
 
@@ -68,14 +68,14 @@ const registerController = async(req ,res)=>{
 const logoutController = (req, res) => {
     console.log("Logging out - NODE_ENV:", process.env.NODE_ENV);
 
-    res.clearCookie("token", { path: "/" });   
+    // res.clearCookie("token", { path: "/" });   
 
-    // res.clearCookie("token", {
-    //     path: "/",
-    //     httpOnly: true,
-    //     secure: process.env.NODE_ENV === "production",
-    //     sameSite: "None"
-    // });
+    res.clearCookie("token", {
+        path: "/",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None"
+    });
 
     res.json({ message: "Cookie deleted successfully" });
 };

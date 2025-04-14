@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styles from "./SignUpCard.module.css";
 import axios from "axios";
-import { authSliceActions } from "../../store/authSlice";
+import { authSliceActions } from "../../store/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import StyledButton from "../StyledButton/StyledButton.jsx";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const SignUpCard = () => {
     const username = useRef();
@@ -16,14 +15,17 @@ const SignUpCard = () => {
     const password = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [isSigningUp , setIsSigningUp] = useState(false);
+    const [isSigningUp, setIsSigningUp] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const checkUserSession = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/user/check-auth`, {
-                withCredentials: true, // Ensure cookies are sent
-            });
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_BASE_URL}/api/user/check-auth`,
+                {
+                    withCredentials: true, // Ensure cookies are sent
+                }
+            );
 
             if (response.status === 200) {
                 dispatch(authSliceActions.login(response.data.user)); // Save user data in Redux
@@ -60,11 +62,11 @@ const SignUpCard = () => {
             setIsSigningUp(false);
             return; // Prevent further execution
         }
-        
-        if(!validateGmail(email.current.value)){
+
+        if (!validateGmail(email.current.value)) {
             toast.error("enter validate gmail");
             setIsSigningUp(false);
-            return ;
+            return;
         }
 
         const registrationDetails = {
@@ -104,59 +106,67 @@ const SignUpCard = () => {
                     autoClose: 3000,
                 }
             );
-        }
-        finally{
+        } finally {
             setIsSigningUp(false);
         }
     };
 
     return (
-        <div className={styles.mainBody}>
-            <div className={styles.card}>
-                <p>Sign up</p>
-                <div className={styles.usernameDiv}>
-                    
+        <div className="w-screen h-[600px] flex justify-center items-center">
+            <div className="bg-black/5 backdrop-blur-lg p-8 rounded-xl w-[400px] h-[400px] shadow-md text-black flex flex-col justify-evenly items-center">
+                <p className="text-2xl font-bold mb-2">Register</p>
+
+                <input
+                    type="text"
+                    placeholder="Username"
+                    ref={username}
+                    required
+                    className="w-full p-3 text-base rounded-md border-b-2 border-black bg-white/20 text-black placeholder-black"
+                />
+
+                <input
+                    type="email"
+                    placeholder="Email"
+                    ref={email}
+                    required
+                    className="w-full p-3 text-base border-b-2 border-black rounded-md bg-white/20 text-black placeholder-black"
+                />
+
+                <div className="relative w-full">
                     <input
-                        ref={username}
-                        type="username"
-                        placeholder="Username"
-                    />
-                </div>
-                <div className={styles.emailDiv}>
-                    
-                    <input ref={email} type="email" placeholder="Email" />
-                </div>
-                <div className={styles.passwordDiv}>
-                    
-                    <input
-                        ref={password}
                         type={showPassword ? "text" : "password"}
                         placeholder="Password"
+                        ref={password}
+                        required
+                        className="w-full p-3 text-base border-b-2 border-black rounded-md bg-white/20 text-black placeholder-black "
                     />
-                    {!showPassword && (
-                        <IoEye
-                            className={styles.eyeButton}
-                            size={25}
-                            onClick={() => setShowPassword(true)}
-                        />
-                    )}
-                    {showPassword && (
-                        <IoEyeOff
-                            className={styles.eyeButton}
-                            size={25}
-                            onClick={() => setShowPassword(false)}
-                        />
-                    )}
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-black hover:text-black">
+                        {!showPassword ? (
+                            <IoEye
+                                size={15}
+                                onClick={() => setShowPassword(true)}
+                            />
+                        ) : (
+                            <IoEyeOff
+                                size={15}
+                                onClick={() => setShowPassword(false)}
+                            />
+                        )}
+                    </div>
                 </div>
+
                 <StyledButton
+                    displayText={isSigningUp ? "loading" : "Sign up"}
                     executeFunction={handleSignUp}
-                    displayText={isSigningUp ? "loading" : "signup" }
                     disabled={isSigningUp}
-                >
-                </StyledButton>
-                <p className={styles.signupText}>
+                />
+
+                <p className="text-black text-xl mt-2">
                     Already have an account?{" "}
-                    <Link style={{ color: "#ccc" }} to="/login">
+                    <Link
+                        className="text-purple-500 hover:underline text-xl"
+                        to="/login"
+                    >
                         Login
                     </Link>
                 </p>

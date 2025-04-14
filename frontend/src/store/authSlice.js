@@ -13,7 +13,6 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action) => {
-            console.log("dispatched to login");
             state.user = action.payload;
             state.isLoggedIn = true;
             localStorage.setItem("user", JSON.stringify(action.payload)); // Persist login

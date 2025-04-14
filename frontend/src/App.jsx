@@ -7,6 +7,10 @@ import LoginCard from "./components/LoginCard/LoginCard";
 import Dashboard from "./components/Dashboard/Dashboard";
 import ChatPage from "./components/Chatpage/ChatPage";
 import { ToastContainer } from 'react-toastify';
+import Problems from "./components/problems/Problems";
+import AddProblem from "./components/AddProblem";
+import ProblemDetails from "./components/ProblemDetails";
+import ProfileDetails from "./components/ProfileDetails";
 
 function App() {
     return (
@@ -21,7 +25,11 @@ function App() {
                             path="/profile"
                             element={<ProfilePage />}
                         ></Route>
+                        <Route path="/profile/:userId" element={<ProfileDetails />}></Route>
+                        <Route path="/problemDetails/:problemId" element={<ProblemDetails />}></Route>
                         <Route path="/dashboard" element={<Dashboard />}></Route>
+                        <Route path="/problems" element={<Problems />}></Route>
+                        <Route path="/addproblem" element={<AddProblem />}></Route>
                         <Route path="/chatpage" element={<ChatPage />}></Route>
                     </Routes>
                 </Layout>

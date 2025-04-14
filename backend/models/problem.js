@@ -7,6 +7,26 @@ const ProblemSchema = new mongoose.Schema({
         required: true,
         trim: true, // Removes leading/trailing spaces
     },
+    issuedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", // Reference to the user who issued the problem
+        required: true, // Ensures every problem has an issuer
+    },
+    difficulty: {
+        type: String,
+        required: true,
+        enum: ["Easy", "Medium", "Hard"],
+        message: "Difficulty must be Easy, Medium, or Hard",
+    },    
+    accessPending: [
+        {
+            solverId: {
+                type: mongoose.Types.ObjectId,
+                ref: "User",
+                required: true,
+            },
+        },
+    ],
     tags: {
         type: [String],
         validate: {
@@ -16,15 +36,8 @@ const ProblemSchema = new mongoose.Schema({
             message: "Tags must be unique!",
         },
     },    
-    difficulty: {
-        type: String,
-        required: true,
-        enum: ["Easy", "Medium", "Hard"],
-        message: "Difficulty must be Easy, Medium, or Hard",
-    },    
     githubLink: {
         type: String,
-        required: true,
         validate: {
             validator: function (v) {
                 return /^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+$/i.test(v);
@@ -49,11 +62,6 @@ const ProblemSchema = new mongoose.Schema({
             },
         },
     ],
-    issuedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Reference to the user who issued the problem
-        required: true, // Ensures every problem has an issuer
-    },
     deadline: {
         type: Date,
         default: 0, // Ensures the problem has a deadline
@@ -62,6 +70,10 @@ const ProblemSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
         index: true, // Optimizes queries for solved problems
+    },
+    issuedAt: {
+        type: Date,
+        default: Date.now, // Automatically sets the issue date
     },
 }, { timestamps: true }); // Adds createdAt and updatedAt
 

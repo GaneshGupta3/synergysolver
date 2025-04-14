@@ -32,12 +32,25 @@ const UserSchema = new mongoose.Schema(
                     type: Boolean,
                     default: false,
                 },
+                granted : {
+                    type: Boolean,
+                    default: false,
+                },
                 attemptedAt: {
                     type: Date,
                     default: Date.now, // Stores attempt time
                 },
             },
         ],
+        skills:{
+            type: [String],
+        },
+        pastProjects: {
+            type: [String],
+        },
+        achievements:{
+            type: [String],
+        },
         issuedProblems: [
             {
                 problemId: {

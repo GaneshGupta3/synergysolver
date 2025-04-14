@@ -1,5 +1,6 @@
 .backgroundImage {
-    background: url("../../assets/backgroundimage2.jpg") center/cover no-repeat; 
+    /* background: url("../../assets/cool-background.png") center/cover no-repeat;  */
+    background-image: linear-gradient(to bottom right, #f7fafc, #d1d5db);
     background-attachment: fixed; 
     background-size: cover; 
     background-position: center; 
