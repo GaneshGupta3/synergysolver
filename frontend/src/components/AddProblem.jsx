@@ -26,8 +26,8 @@ export default function AddProblem() {
                     `${import.meta.env.VITE_API_BASE_URL}/api/user/check-auth`,
                     { withCredentials: true }
                 );
-                dispatch(authSliceActions.login(response.data.user));
-                console.log(response.data.data);
+                dispatch(authSliceActions.login(response.data));
+                console.log(response.data);
             } catch (error) {
                 console.error(
                     "You are not authorized to access this page",

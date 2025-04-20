@@ -371,8 +371,16 @@ export default function ProfileDetails() {
                                             {user.solvingProblems.map(
                                                 (problem, index) => (
                                                     <div
+                                                        onClick={() => {
+                                                            navigate(
+                                                                "/problemDetails/" +
+                                                                    problem
+                                                                        .problemId
+                                                                        ._id
+                                                            );
+                                                        }}
                                                         key={index}
-                                                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                                                        className="border  border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <h4 className="font-medium">
@@ -418,8 +426,14 @@ export default function ProfileDetails() {
                                             {user.issuedProblems.map(
                                                 (problem, index) => (
                                                     <div
+                                                        onClick={() => {
+                                                            navigate(
+                                                                `/problemDetails/${problem.problemId._id}`
+                                                            );
+                                                            // console.log(problem.problemId._id)
+                                                        }}
                                                         key={index}
-                                                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                                                        className="border cursor-pointer border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <h4 className="font-medium">
@@ -442,7 +456,7 @@ export default function ProfileDetails() {
                                                             </span>
                                                         </div>
                                                         <div className="text-sm text-gray-500 mt-2">
-                                                            Issued:{" "}
+                                                            Issued at:{" "}
                                                             {new Date(
                                                                 problem.issuedAt
                                                             ).toLocaleDateString()}

@@ -28,7 +28,7 @@ const Navbar = ({ transparent }) => {
             ></div>
 
             {/* Nav Links */}
-            <NavLink text={"DashBoard"} navigateTo={"dashboard"}></NavLink>
+            {isLoggedIn && <NavLink text={"DashBoard"} navigateTo={"dashboard"}></NavLink>}
 
             {isLoggedIn && (
                 <NavLink text={"discussion"} navigateTo={"chatpage"}></NavLink>

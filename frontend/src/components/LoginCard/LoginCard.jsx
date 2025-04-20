@@ -27,7 +27,8 @@ function LoginCard() {
 
             if (response.status === 200) {
                 toast.success("already logged in"); // Notify user
-                dispatch(authSliceActions.login(response.data.user)); // Save user data in Redux
+                console.log(response.data)
+                dispatch(authSliceActions.login(response.data)); // Save user data in Redux
                 navigate("/dashboard"); // Redirect to dashboard page
             }
         } catch (error) {

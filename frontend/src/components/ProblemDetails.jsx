@@ -20,6 +20,7 @@ export default function ProblemDetails() {
     const [isExpanded, setIsExpanded] = useState(false);
     const [problem, setProblem] = useState({});
     const { problemId } = useParams();
+    const [currentUser , setCurrentUser] = useState(null);
     const dispatch = useDispatch();
 
     // Calculate time remaining until deadline
@@ -66,8 +67,8 @@ export default function ProblemDetails() {
 
                 updateTimeRemaining();
                 const interval = setInterval(updateTimeRemaining, 60000);
-                console.log(response.data.data.user);
                 dispatch(authSliceActions.login(response.data.data.user));
+                setCurrentUser(response.data.data.user);
                 console.log(response.data.data.user);
                 return () => clearInterval(interval);
             } catch (error) {
@@ -292,6 +293,9 @@ export default function ProblemDetails() {
             {/* Problem Actions */}
             <div className="p-6 bg-gray-50 border-t border-gray-200">
                 <div className="flex flex-wrap gap-3">
+
+                    {(currentUser && currentUser._id.toString() === problem.issuedBy._id.toString())  ? "pending request " : "request acess" }
+
                     <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         Request Access
                     </button>
