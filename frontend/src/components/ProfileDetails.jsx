@@ -118,6 +118,7 @@ export default function ProfileDetails() {
 
             // Dispatch login action
             dispatch(authSliceActions.login(response.data.data)); // Login with the updated user data
+            console.log(response);
             if (response.status == 200) {
                 title.current.value = "";
                 description.current.value = "";
