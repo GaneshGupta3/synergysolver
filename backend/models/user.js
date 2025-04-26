@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema(
                     type: Boolean,
                     default: false,
                 },
-                granted : {
+                granted: {
                     type: Boolean,
                     default: false,
                 },
@@ -42,13 +42,19 @@ const UserSchema = new mongoose.Schema(
                 },
             },
         ],
-        skills:{
+        skills: {
             type: [String],
         },
-        pastProjects: {
-            type: [String],
-        },
-        achievements:{
+        pastProjects: [
+            {
+                type: {
+                    title: {type : String , required: true},
+                    description: {type : String , required: true},
+                    link: {type : String , required: true},
+                },
+            },
+        ],
+        achievements: {
             type: [String],
         },
         issuedProblems: [
@@ -68,12 +74,12 @@ const UserSchema = new mongoose.Schema(
                 },
             },
         ],
-        contact : [
+        contact: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User", // References other users in the system
             },
-        ]
+        ],
     },
     { timestamps: true }
 );

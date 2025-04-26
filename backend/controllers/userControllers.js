@@ -43,21 +43,26 @@ const checkAuthController = (req, res) => {
 const getUser = async (req, res) => {
     try {
         const userId = req.params.userId;
+        const realUserId = req.user._id;
 
         const user = await User.findById(userId)
             .populate("contact")
             .populate({
                 path: "issuedProblems.problemId",
-                model: "Problem"
+                model: "Problem",
             })
             .populate({
                 path: "solvingProblems.problemId",
-                model: "Problem"
-            })
-            
+                model: "Problem",
+            });
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
+        }
+
+        if (realUserId.toString() !== userId.toString()) {
+            const realUser = await User.findById(realUserId);
+            return res.status(200).json({ realUser: realUser, data: user });
         }
 
         return res.status(200).json({ data: user });
@@ -67,25 +72,44 @@ const getUser = async (req, res) => {
     }
 };
 
-
-const editSkills = async(req , res) => {
+const editSkills = async (req, res) => {
     try {
         const { skills } = req.body;
         const userId = req.user._id;
         const user = await findUserWithValidation(userId, res);
         user.skills = skills;
         await user.save();
-        res.status(200).json({ message: "Skills added successfully" ,data: user });
+        res.status(200).json({
+            message: "Skills added successfully",
+            data: user,
+        });
     } catch (error) {
         console.log("error in add skills controller:", error.message);
         res.status(500).json({ message: "Internal server error" });
     }
-}
+};
 
+const editPastProjects = async (req, res) => {
+    try {
+        const { pastProjects } = req.body;
+        const userId = req.user._id;
+        const user = await findUserWithValidation(userId, res);
+        user.pastProjects = pastProjects;
+        await user.save();
+        res.status(200).json({
+            message: "Past projects added successfully",
+            data: user,
+        });
+    } catch (error) {
+        console.log("error in add past projects controller:", error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 module.exports = {
     updateProfileController,
     checkAuthController,
     getUser,
-    editSkills
+    editSkills,
+    editPastProjects,
 };

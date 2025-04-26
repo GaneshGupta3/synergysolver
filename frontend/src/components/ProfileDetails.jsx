@@ -23,16 +23,52 @@ export default function ProfileDetails() {
     const dispatch = useDispatch();
     const { user: sliceUser } = useSelector((store) => store.authProvider);
     const inputSkill = useRef(null);
+    const title = useRef(null);
+    const description = useRef(null);
+    const url = useRef(null);
+    const inputProjectLink = useRef(null);
     const [expandedSections, setExpandedSections] = useState({
         skills: true,
         projects: false,
         achievements: false,
         contacts: false,
     });
+    const [showProjectForm, setShowProjectForm] = useState(false);
+
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // Mock data fetching - in a real app, you'd fetch from your API
+        const fetchUser = async () => {
+            try {
+                // Replace with actual API call
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_BASE_URL}/api/user/${userId}`,
+                    {
+                        withCredentials: true,
+                    }
+                );
+                if (response.data.realUser) {
+                    dispatch(authSliceActions.login(response.data.realUser));
+                    setUser(response.data.data);
+                } else {
+                    const userData = response.data.data;
+                    console.log(response.data.data);
+                    dispatch(authSliceActions.login(userData));
+                    setUser(userData);
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUser();
+    }, [userId]);
+
     const handleLogout = async () => {
-        await dispatch(logoutAsync()); // Calls API & updates Redux state
+        dispatch(logoutAsync()); // Calls API & updates Redux state
         navigate("/login");
     };
 
@@ -54,6 +90,69 @@ export default function ProfileDetails() {
         }
     };
 
+    const addProjects = async () => {
+        try {
+            const newProject = {
+                title: title.current.value.trim(),
+                description: description.current.value.trim(),
+                link: url.current.value.trim(),
+            };
+
+            // Update state optimistically, but don't use it right away
+            setUser((prevState) => ({
+                ...prevState,
+                pastProjects: [...prevState.pastProjects, newProject],
+            }));
+
+            // Send the updated projects to the backend
+            const response = await axios.post(
+                `${
+                    import.meta.env.VITE_API_BASE_URL
+                }/api/user/editPastProjects`,
+                { pastProjects: [...user.pastProjects, newProject] }, // send updated projects
+                { withCredentials: true }
+            );
+
+            // Update the state with the response data (backend's confirmation)
+            setUser(response.data.data);
+
+            // Dispatch login action
+            dispatch(authSliceActions.login(response.data.data)); // Login with the updated user data
+            if (response.status == 200) {
+                title.current.value = "";
+                description.current.value = "";
+                url.current.value = "";
+                setShowProjectForm(false);
+            }
+        } catch (error) {
+            console.log("Error in adding project: ", error);
+        }
+    };
+
+    const removeProjects = async (project) => {
+        const updatedProjects = user.pastProjects.filter((p) => p !== project);
+        if (sliceUser.pastProjects === updatedProjects) {
+            console.log("No changes made to Past Projects");
+            return;
+        }
+        try {
+            const response = await axios.post(
+                `${
+                    import.meta.env.VITE_API_BASE_URL
+                }/api/user/editPastProjects`,
+                { pastProjects: updatedProjects },
+                { withCredentials: true }
+            );
+            console.log("Project removed successfully:", response.data);
+            setUser((prevUser) => ({
+                ...prevUser,
+                pastProjects: updatedProjects,
+            }));
+        } catch (error) {
+            console.error("Error removing project:", error);
+        }
+    };
+
     const addSkillsLocally = () => {
         const newSkill = inputSkill.current.value.trim();
         if (newSkill) {
@@ -71,31 +170,6 @@ export default function ProfileDetails() {
             skills: prevUser.skills.filter((s) => s !== skill),
         }));
     };
-
-    useEffect(() => {
-        // Mock data fetching - in a real app, you'd fetch from your API
-        const fetchUser = async () => {
-            try {
-                // Replace with actual API call
-                const response = await axios.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/api/user/${userId}`,
-                    {
-                        withCredentials: true,
-                    }
-                );
-                const userData = response.data.data;
-                console.log(response.data.data);
-                dispatch(authSliceActions.login(userData));
-                setUser(userData);
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUser();
-    }, [userId]);
 
     const toggleSection = (section) => {
         setExpandedSections({
@@ -116,6 +190,99 @@ export default function ProfileDetails() {
 
     return (
         <div className="bg-gray-50 text-black min-h-screen">
+            {showProjectForm && (
+                <div className="fixed inset-0 z-10 w-screen h-screen flex items-center justify-center">
+                    {/* Background overlay with improved blur */}
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"></div>
+
+                    {/* Modal with light theme styling */}
+                    <div className="relative bg-white w-11/12 sm:w-3/5 md:w-1/2 max-w-2xl h-auto max-h-4/5 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300">
+                        {/* Decorative top bar */}
+                        <div className="bg-gradient-to-r from-blue-400 to-blue-600 h-2 w-full"></div>
+
+                        <div className="p-8 flex flex-col gap-6">
+                            {/* Close button with improved hover effect */}
+                            <button
+                                onClick={() => setShowProjectForm(false)}
+                                className="absolute top-4 right-4 size-10 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-full p-2 cursor-pointer transition-all duration-300"
+                                aria-label="Close"
+                            >
+                                <RxCross2 size={22} />
+                            </button>
+
+                            {/* Header with improved typography */}
+                            <div className="text-center mb-2">
+                                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+                                    Add New Project
+                                </h2>
+                                <p className="text-gray-500 mt-1">
+                                    Share your amazing work with the world
+                                </p>
+                            </div>
+
+                            {/* Form with improved input styling */}
+                            <form className="w-full space-y-6">
+                                <div className="space-y-1">
+                                    <label className="text-sm font-medium text-gray-700">
+                                        Project Title{" "}
+                                        <h1 className="text-red-500 size-2 inline">
+                                            *
+                                        </h1>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        ref={title}
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all duration-300 bg-white"
+                                        placeholder="Enter project title"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="text-sm font-medium text-gray-700">
+                                        Description{" "}
+                                        <h1 className="text-red-500 size-2 inline">
+                                            *
+                                        </h1>
+                                    </label>
+                                    <textarea
+                                        ref={description}
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all duration-300 resize-none h-24 bg-white"
+                                        placeholder="Describe your project"
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="text-sm font-medium text-gray-700">
+                                        Project URL{" "}
+                                        <h1 className="text-red-500 size-2 inline">
+                                            *
+                                        </h1>
+                                    </label>
+                                    <input
+                                        type="url"
+                                        ref={url}
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all duration-300 bg-white"
+                                        placeholder="https://github.com/yourusername/project"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Submit button with blue gradient */}
+                                <button
+                                    onClick={addProjects}
+                                    type="submit"
+                                    className="w-full py-3 px-6 text-white font-medium bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                >
+                                    Add Project
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="container mx-auto py-8 px-4 md:px-8">
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
                     {/* Profile Header */}
@@ -174,17 +341,23 @@ export default function ProfileDetails() {
                                 {expandedSections.skills && (
                                     <>
                                         <div className="mt-3">
-                                            <input
-                                                onKeyDown={(event) => {
-                                                    if (event.key === "Enter") {
-                                                        addSkillsLocally();
-                                                    }
-                                                }}
-                                                ref={inputSkill}
-                                                type="text"
-                                                className="w-[80%] mt-2 border-0 border-b-2 border-b-gray-300 focus:border-b-blue-500 focus:text-blue-500 focus:outline-none p-1 transition-all duration-200"
-                                                placeholder="add skills"
-                                            />
+                                            {user._id.toString() ===
+                                                sliceUser._id.toString() && (
+                                                <input
+                                                    onKeyDown={(event) => {
+                                                        if (
+                                                            event.key ===
+                                                            "Enter"
+                                                        ) {
+                                                            addSkillsLocally();
+                                                        }
+                                                    }}
+                                                    ref={inputSkill}
+                                                    type="text"
+                                                    className="w-[80%] mt-2 border-0 border-b-2 border-b-gray-300 focus:border-b-blue-500 focus:text-blue-500 focus:outline-none p-1 transition-all duration-200"
+                                                    placeholder="add skills"
+                                                />
+                                            )}
                                             <br />
                                             <div className="flex flex-wrap gap-2 mt-3">
                                                 {user.skills.map(
@@ -194,24 +367,30 @@ export default function ProfileDetails() {
                                                             className="bg-blue-100 flex gap-0.5 items-center text-blue-800 px-3 py-1 rounded-full text-sm"
                                                         >
                                                             {skill}
-                                                            <RxCross2
-                                                                onClick={() =>
-                                                                    removeSkillLocally(
-                                                                        skill
-                                                                    )
-                                                                }
-                                                                className="hover:bg-blue-300 rounded-2xl cursor-pointer"
-                                                            />
+                                                            {user._id.toString() ===
+                                                                sliceUser._id.toString() && (
+                                                                <RxCross2
+                                                                    onClick={() =>
+                                                                        removeSkillLocally(
+                                                                            skill
+                                                                        )
+                                                                    }
+                                                                    className="hover:bg-blue-300 rounded-2xl cursor-pointer"
+                                                                />
+                                                            )}
                                                         </span>
                                                     )
                                                 )}
                                             </div>
-                                            <div
-                                                onClick={handleEditSkills}
-                                                className="mt-4 p-1 bg-blue-400 w-[60px] rounded-md text-white text-center cursor-pointer hover:bg-blue-500 transition"
-                                            >
-                                                save
-                                            </div>
+                                            {user._id.toString() ===
+                                                sliceUser._id.toString() && (
+                                                <div
+                                                    onClick={handleEditSkills}
+                                                    className="mt-4 p-1 bg-blue-400 w-[60px] rounded-md text-white text-center cursor-pointer hover:bg-blue-500 transition"
+                                                >
+                                                    save
+                                                </div>
+                                            )}
                                         </div>
                                     </>
                                 )}
@@ -239,18 +418,47 @@ export default function ProfileDetails() {
 
                                 {expandedSections.projects && (
                                     <div className="mt-3">
-                                        <ul className="list-disc list-inside text-gray-700">
+                                        <ul className="list-disc list-inside text-gray-700 space-y-2">
                                             {user.pastProjects.map(
                                                 (project, index) => (
                                                     <li
                                                         key={index}
-                                                        className="py-1"
+                                                        className="flex mt-2 flex-col sm:flex-row sm:items-center w-fit sm:justify-between gap-2 bg-gray-100 p-1 rounded-md hover:bg-blue-100 transition-all duration-200 overflow-hidden"
                                                     >
-                                                        {project}
+                                                        <a
+                                                            href={project.link}
+                                                            className="text-blue-400 cursor-pointer break-words overflow-hidden text-ellipsis text-sm sm:text-base w-full"
+                                                        >
+                                                            {project.link}
+                                                        </a>
+                                                        <RxCross2
+                                                            onClick={() =>
+                                                                removeProjects(
+                                                                    project
+                                                                )
+                                                            }
+                                                            className="flex-shrink-0 text-red-500 hover:bg-red-200 rounded-full p-1 cursor-pointer transition-all duration-200"
+                                                            size={22}
+                                                            title="Remove Project"
+                                                        />
                                                     </li>
                                                 )
                                             )}
                                         </ul>
+
+                                        {user._id.toString() ===
+                                            sliceUser._id.toString() && (
+                                            <div
+                                                onClick={() =>
+                                                    setShowProjectForm(
+                                                        !showProjectForm
+                                                    )
+                                                }
+                                                className="mt-4 p-1 bg-blue-400 w-[60px] rounded-md text-white text-center cursor-pointer hover:bg-blue-500 transition"
+                                            >
+                                                add
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
