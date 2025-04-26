@@ -90,7 +90,8 @@ export default function ProfileDetails() {
         }
     };
 
-    const addProjects = async () => {
+    const addProjects = async (event) => {
+        event.preventDefault();
         try {
             const newProject = {
                 title: title.current.value.trim(),
