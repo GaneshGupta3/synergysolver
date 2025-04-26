@@ -431,7 +431,7 @@ export default function ProfileDetails() {
                                                             href={project.link}
                                                             className="text-blue-400 cursor-pointer break-words overflow-hidden text-ellipsis text-sm sm:text-base w-full"
                                                         >
-                                                            {project.link}
+                                                            {project.title}
                                                         </a>
                                                         <RxCross2
                                                             onClick={() =>
