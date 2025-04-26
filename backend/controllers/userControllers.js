@@ -2,6 +2,15 @@ const { default: Message } = require("../models/message");
 const User = require("../models/user");
 const cloudinary = require("../services/cloudinary");
 
+const findUserWithValidation = async (userId, res) => {
+    const user = await User.findById(userId);
+    if (!user) {
+        res.status(404).json({ success: false, message: "User not found" });
+        return null;
+    }
+    return user;
+};
+
 const updateProfileController = async (req, res) => {
     try {
         const { profilePic } = req.body;
@@ -59,9 +68,24 @@ const getUser = async (req, res) => {
 };
 
 
+const editSkills = async(req , res) => {
+    try {
+        const { skills } = req.body;
+        const userId = req.user._id;
+        const user = await findUserWithValidation(userId, res);
+        user.skills = skills;
+        await user.save();
+        res.status(200).json({ message: "Skills added successfully" ,data: user });
+    } catch (error) {
+        console.log("error in add skills controller:", error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
 
 module.exports = {
     updateProfileController,
     checkAuthController,
     getUser,
+    editSkills
 };

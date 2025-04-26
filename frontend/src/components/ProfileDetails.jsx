@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     ChevronDown,
     ChevronUp,
     Mail,
-    Phone,
     Award,
     Briefcase,
     Code,
@@ -12,8 +11,9 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { authSliceActions, logoutAsync } from "../store/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LogoutButton from "./Logout/LogoutButton";
+import { RxCross2 } from "react-icons/rx";
 
 export default function ProfileDetails() {
     const { userId } = useParams();
@@ -21,6 +21,8 @@ export default function ProfileDetails() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("problems");
     const dispatch = useDispatch();
+    const { user: sliceUser } = useSelector((store) => store.authProvider);
+    const inputSkill = useRef(null);
     const [expandedSections, setExpandedSections] = useState({
         skills: true,
         projects: false,
@@ -32,6 +34,42 @@ export default function ProfileDetails() {
     const handleLogout = async () => {
         await dispatch(logoutAsync()); // Calls API & updates Redux state
         navigate("/login");
+    };
+
+    const handleEditSkills = async () => {
+        const skills = user.skills;
+        try {
+            if (skills === sliceUser.skills) {
+                console.log("No changes made to skills.");
+                return;
+            }
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/api/user/editSkills`,
+                { skills },
+                { withCredentials: true }
+            );
+            console.log("Skills added successfully:", response.data);
+        } catch (error) {
+            console.error("Error adding skills:", error);
+        }
+    };
+
+    const addSkillsLocally = () => {
+        const newSkill = inputSkill.current.value.trim();
+        if (newSkill) {
+            setUser((prevUser) => ({
+                ...prevUser,
+                skills: [...prevUser.skills, newSkill],
+            }));
+            inputSkill.current.value = "";
+        }
+    };
+
+    const removeSkillLocally = (skill) => {
+        setUser((prevUser) => ({
+            ...prevUser,
+            skills: prevUser.skills.filter((s) => s !== skill),
+        }));
     };
 
     useEffect(() => {
@@ -64,63 +102,6 @@ export default function ProfileDetails() {
             ...expandedSections,
             [section]: !expandedSections[section],
         });
-    };
-
-    // Mock data for demonstration
-    const mockUser = {
-        username: "techcoder42",
-        email: "techcoder@example.com",
-        profilePic: "/api/placeholder/150/150",
-        skills: [
-            "JavaScript",
-            "React",
-            "Node.js",
-            "MongoDB",
-            "Express",
-            "Python",
-        ],
-        pastProjects: [
-            "E-commerce Platform",
-            "Task Management App",
-            "Social Media Dashboard",
-        ],
-        achievements: [
-            "Hackathon Winner 2024",
-            "1000+ Problems Solved",
-            "Top Contributor",
-        ],
-        solvingProblems: [
-            {
-                problemId: "1",
-                title: "Optimize Database Query",
-                solved: true,
-                attemptedAt: new Date().toISOString(),
-            },
-            {
-                problemId: "2",
-                title: "Fix Authentication Bug",
-                solved: false,
-                attemptedAt: new Date().toISOString(),
-            },
-        ],
-        issuedProblems: [
-            {
-                problemId: "3",
-                title: "Implement Chat Feature",
-                solved: true,
-                issuedAt: new Date().toISOString(),
-            },
-            {
-                problemId: "4",
-                title: "Optimize Image Compression",
-                solved: false,
-                issuedAt: new Date().toISOString(),
-            },
-        ],
-        contact: [
-            { username: "devpro", email: "devpro@example.com" },
-            { username: "codemaster", email: "codemaster@example.com" },
-        ],
     };
 
     if (loading) {
@@ -172,7 +153,9 @@ export default function ProfileDetails() {
                             <div className="mb-6">
                                 <div
                                     className="flex items-center justify-between cursor-pointer"
-                                    onClick={() => toggleSection("skills")}
+                                    onClick={() => {
+                                        toggleSection("skills");
+                                    }}
                                 >
                                     <div className="flex items-center text-lg font-semibold text-gray-700">
                                         <Code
@@ -189,18 +172,48 @@ export default function ProfileDetails() {
                                 </div>
 
                                 {expandedSections.skills && (
-                                    <div className="mt-3">
-                                        <div className="flex flex-wrap gap-2">
-                                            {user.skills.map((skill, index) => (
-                                                <span
-                                                    key={index}
-                                                    className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-                                                >
-                                                    {skill}
-                                                </span>
-                                            ))}
+                                    <>
+                                        <div className="mt-3">
+                                            <input
+                                                onKeyDown={(event) => {
+                                                    if (event.key === "Enter") {
+                                                        addSkillsLocally();
+                                                    }
+                                                }}
+                                                ref={inputSkill}
+                                                type="text"
+                                                className="w-[80%] mt-2 border-0 border-b-2 border-b-gray-300 focus:border-b-blue-500 focus:text-blue-500 focus:outline-none p-1 transition-all duration-200"
+                                                placeholder="add skills"
+                                            />
+                                            <br />
+                                            <div className="flex flex-wrap gap-2 mt-3">
+                                                {user.skills.map(
+                                                    (skill, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="bg-blue-100 flex gap-0.5 items-center text-blue-800 px-3 py-1 rounded-full text-sm"
+                                                        >
+                                                            {skill}
+                                                            <RxCross2
+                                                                onClick={() =>
+                                                                    removeSkillLocally(
+                                                                        skill
+                                                                    )
+                                                                }
+                                                                className="hover:bg-blue-300 rounded-2xl cursor-pointer"
+                                                            />
+                                                        </span>
+                                                    )
+                                                )}
+                                            </div>
+                                            <div
+                                                onClick={handleEditSkills}
+                                                className="mt-4 p-1 bg-blue-400 w-[60px] rounded-md text-white text-center cursor-pointer hover:bg-blue-500 transition"
+                                            >
+                                                save
+                                            </div>
                                         </div>
-                                    </div>
+                                    </>
                                 )}
                             </div>
 
