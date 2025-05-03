@@ -121,7 +121,7 @@ const SignUpCard = () => {
                     placeholder="Username"
                     ref={username}
                     required
-                    className="w-full p-3 text-base rounded-md border-b-2 border-black bg-white/20 text-black placeholder-black"
+                    className="w-full p-3 text-base rounded-md border-b-2 border-black bg-white/20 text-black placeholder-black focus:outline-0 focus:border-b-2"
                 />
 
                 <input
@@ -129,7 +129,7 @@ const SignUpCard = () => {
                     placeholder="Email"
                     ref={email}
                     required
-                    className="w-full p-3 text-base border-b-2 border-black rounded-md bg-white/20 text-black placeholder-black"
+                    className="w-full p-3 text-base border-b-2 border-black rounded-md bg-white/20 text-black placeholder-black focus:outline-0 focus:border-b-2"
                 />
 
                 <div className="relative w-full">
@@ -138,7 +138,7 @@ const SignUpCard = () => {
                         placeholder="Password"
                         ref={password}
                         required
-                        className="w-full p-3 text-base border-b-2 border-black rounded-md bg-white/20 text-black placeholder-black "
+                        className="w-full p-3 text-base border-b-2 border-black rounded-md bg-white/20 text-black placeholder-black focus:outline-0 focus:border-b-2"
                     />
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-black hover:text-black">
                         {!showPassword ? (
