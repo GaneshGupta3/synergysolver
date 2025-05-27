@@ -20,8 +20,7 @@ app.use(
     cors({
         origin: [
             "https://synergysolver.vercel.app",
-            "http://localhost:5173",
-            "http://localhost:5174",
+            "http://localhost:5173"
         ],
         credentials: true,
     })

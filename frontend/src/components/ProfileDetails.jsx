@@ -26,6 +26,7 @@ export default function ProfileDetails() {
     const title = useRef(null);
     const description = useRef(null);
     const url = useRef(null);
+    const achievements = useRef(null);
     const inputProjectLink = useRef(null);
     const [expandedSections, setExpandedSections] = useState({
         skills: true,
@@ -360,13 +361,13 @@ export default function ProfileDetails() {
                                                     placeholder="add skills"
                                                 />
                                             )}
-                                            <br />
-                                            <div className="flex flex-wrap gap-2 mt-3">
+                                            {/* <br /> */}
+                                            <div className="flex flex-wrap gap-2">
                                                 {user.skills.map(
                                                     (skill, index) => (
                                                         <span
                                                             key={index}
-                                                            className="bg-blue-100 flex gap-0.5 items-center text-blue-800 px-3 py-1 rounded-full text-sm"
+                                                            className="bg-blue-100 flex gap-0.5 items-center text-blue-800 px-3 py-1 rounded-full text-sm mt-3"
                                                         >
                                                             {skill}
                                                             {user._id.toString() ===
@@ -428,6 +429,7 @@ export default function ProfileDetails() {
                                                         className="flex mt-2 flex-col sm:flex-row sm:items-center w-fit sm:justify-between gap-2 bg-gray-100 p-1 rounded-md hover:bg-blue-100 transition-all duration-200 overflow-hidden"
                                                     >
                                                         <a
+                                                            target="_blank"
                                                             href={project.link}
                                                             className="text-blue-400 cursor-pointer break-words overflow-hidden text-ellipsis text-sm sm:text-base w-full"
                                                         >
@@ -488,20 +490,42 @@ export default function ProfileDetails() {
                                 </div>
 
                                 {expandedSections.achievements && (
-                                    <div className="mt-3">
-                                        <ul className="list-disc list-inside text-gray-700">
-                                            {user.achievements.map(
-                                                (achievement, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="py-1"
-                                                    >
-                                                        {achievement}
-                                                    </li>
-                                                )
-                                            )}
-                                        </ul>
-                                    </div>
+                                    <>
+                                        {user._id.toString() ===
+                                            sliceUser._id.toString() && (
+                                            <input
+                                                onKeyDown={(event) => {
+                                                    if (event.key === "Enter") {
+                                                        addSkillsLocally();
+                                                    }
+                                                }}
+                                                ref={achievements}
+                                                type="text"
+                                                className="w-[80%] mt-2 border-0 border-b-2 border-b-gray-300 focus:border-b-blue-500 focus:text-blue-500 focus:outline-none p-1 transition-all duration-200"
+                                                placeholder="add skills"
+                                            />
+                                        )}
+                                        <div className="mt-3">
+                                            <ul className="list-disc list-inside text-gray-700">
+                                                {user.achievements.map(
+                                                    (achievement, index) => (
+                                                        <li
+                                                            key={index}
+                                                            className="py-1"
+                                                        >
+                                                            {achievement}
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ul>
+                                        </div>
+                                        <div
+                                            onClick={handleEditSkills}
+                                            className="mt-4 p-1 bg-blue-400 w-[60px] rounded-md text-white text-center cursor-pointer hover:bg-blue-500 transition"
+                                        >
+                                            save
+                                        </div>
+                                    </>
                                 )}
                             </div>
 

@@ -116,11 +116,11 @@ const attemptProblem = async (req, res) => {
     //params : problemId
     try {
         const { problemId } = req.params; // assuming problemId is passed in the URL
+        const userId = req.user._id; // assuming req.user is populated by auth middleware
         const problem = await findProblemWithValidation(problemId, res);
         problem.accessPending.push({ solverId: userId });
         await problem.save();
 
-        const userId = req.user._id; // assuming req.user is populated by auth middleware
         const user = await findUserWithValidation(userId, res);
         user.solvingProblems.push({ problemId });
         await user.save();
@@ -325,6 +325,10 @@ const grantSolution = async (req, res) => {
     }
 };
 
+const requestAccess = async (req , res) => {
+    
+}
+
 module.exports = {
     issueProblem,
     getAllProblems,
@@ -333,4 +337,5 @@ module.exports = {
     getSpecificProblem,
     getUnsolvedProblems,
     grantSolution,
+    requestAccess
 };

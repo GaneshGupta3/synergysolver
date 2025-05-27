@@ -70,7 +70,6 @@ const UserSchema = new mongoose.Schema(
                 },
                 issuedAt: {
                     type: Date,
-                    default: Date.now, // Stores attempt time
                 },
             },
         ],

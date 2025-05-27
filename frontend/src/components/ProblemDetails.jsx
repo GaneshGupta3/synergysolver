@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
     Clock,
     Github,
@@ -9,27 +10,67 @@ import {
     X,
     Users,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { authSliceActions } from "../store/authSlice";
+import { CiLink } from "react-icons/ci";
 
 // Problem Display Component
 export default function ProblemDetails() {
     const [timeRemaining, setTimeRemaining] = useState("");
     const [isExpanded, setIsExpanded] = useState(false);
     const [problem, setProblem] = useState({});
+    const [copyLink, setCopyLink] = useState("copy link");
     const { problemId } = useParams();
-    const [currentUser , setCurrentUser] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
     const dispatch = useDispatch();
+
+    const location = useLocation();
+    const currentURL = `${window.location.origin}${location.pathname}${location.search}`;
+
+    const requestAccess = async () => {
+        try {
+            const response = await axios.post(
+                `${
+                    import.meta.env.VITE_API_BASE_URL
+                }/api/problem/attemptProblem/${problemId}`,
+                {},
+                { withCredentials: true }
+            );
+            if (response.data.success) {
+                toast.success("Access requested successfully!");
+                // Optionally, you can update the UI or state here
+            }
+            console.log(response.data);
+            setProblem(response.data.data.problem);
+            setCurrentUser(response.data.data.user);
+        } catch (error) {
+            console.error("Error requesting access:", error);
+            toast.error("Failed to request access");
+        }
+    };
+
+    const handleCopy = () => {
+        try {
+            navigator.clipboard.writeText(window.location.href); // Or your custom link
+            setCopyLink("Copied!");
+            setTimeout(() => {
+                setCopyLink("Copy Link");
+            }, 2000); // Reset message after 2 seconds
+        } catch (error) {
+            console.error("Failed to copy the link:", error);
+        }
+    };
 
     // Calculate time remaining until deadline
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-
                 const response = await axios.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/api/problem/getProblem/${problemId}`,
+                    `${
+                        import.meta.env.VITE_API_BASE_URL
+                    }/api/problem/getProblem/${problemId}`,
                     { withCredentials: true }
                 );
 
@@ -39,7 +80,11 @@ export default function ProblemDetails() {
 
                 console.log(problemData);
 
-                if (!problemData ||!problemData.deadline ||problemData.deadline === 0)
+                if (
+                    !problemData ||
+                    !problemData.deadline ||
+                    problemData.deadline === 0
+                )
                     return;
 
                 const updateTimeRemaining = () => {
@@ -67,9 +112,9 @@ export default function ProblemDetails() {
 
                 updateTimeRemaining();
                 const interval = setInterval(updateTimeRemaining, 60000);
+                console.log(response.data.data.user);
                 dispatch(authSliceActions.login(response.data.data.user));
                 setCurrentUser(response.data.data.user);
-                console.log(response.data.data.user);
                 return () => clearInterval(interval);
             } catch (error) {
                 console.error("Error fetching problem:", error);
@@ -167,6 +212,7 @@ export default function ProblemDetails() {
             {/* Problem Content */}
             <div className="p-6">
                 {/* Tags */}
+                {!problem.tags && <div>none</div>}
                 {problem.tags && problem.tags.length > 0 && (
                     <div className="mb-6">
                         <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
@@ -292,15 +338,40 @@ export default function ProblemDetails() {
 
             {/* Problem Actions */}
             <div className="p-6 bg-gray-50 border-t border-gray-200">
-                <div className="flex flex-wrap gap-3">
+                <div className="flex items-center flex-wrap gap-3">
+                    {currentUser &&
+                        (currentUser._id.toString() ===
+                        problem.issuedBy._id.toString() ? null : problem.accessPending.some(
+                              (entry) =>
+                                  entry.solverId.toString() ===
+                                  currentUser._id.toString()
+                          ) ? (
+                            <span className="text-yellow-500">
+                                Request Pending
+                            </span>
+                        ) : problem.attempters.some(
+                              (entry) =>
+                                  entry.userId.toString() ===
+                                  currentUser._id.toString()
+                          ) ? (
+                            <span className="text-green-600">
+                                Submit Solution
+                            </span>
+                        ) : (
+                            <button
+                                onClick={requestAccess}
+                                className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            >
+                                Request Access
+                            </button>
+                        ))}
 
-                    {(currentUser && currentUser._id.toString() === problem.issuedBy._id.toString())  ? "pending request " : "request acess" }
-
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                        Request Access
-                    </button>
-                    <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                        Share
+                    <button
+                        onClick={handleCopy}
+                        className="px-4 py-2 cursor-pointer border border-gray-300 rounded-md flex justify-center items-center gap-3 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    >
+                        {copyLink}
+                        <CiLink />
                     </button>
                 </div>
             </div>
