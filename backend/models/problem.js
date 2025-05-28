@@ -27,6 +27,15 @@ const ProblemSchema = new mongoose.Schema({
             },
         },
     ],
+    accessRejected:[
+        {
+            requesterId:{
+                type: mongoose.Types.ObjectId,
+                ref: "User",
+                required: true,
+            }
+        }
+    ],
     tags: {
         type: [String],
         validate: {

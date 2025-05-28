@@ -1,19 +1,29 @@
 .backgroundImage {
-    /* background: url("../../assets/cool-background.png") center/cover no-repeat;  */
     background-image: linear-gradient(to bottom right, #f7fafc, #d1d5db);
     background-attachment: fixed; 
     background-size: cover; 
     background-position: center; 
     width: 100%; 
     min-height: 100vh; /* Allow the container to grow with content */
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    z-index: -1; 
-    overflow-y: auto; /* Enable vertical scrolling for content */
+    
+    /* REMOVE these fixed positioning properties: */
+    /* position: fixed; */
+    /* top: 0; */
+    /* left: 0; */
+    /* z-index: -1; */
+    
+    /* REPLACE with: */
+    position: relative; /* or just remove position entirely */
+    overflow-y: visible; /* Change from auto to visible */
 }
 
 .layoutmainBody{
     position: relative;
-    top: 112px;
+    top: 112px; /* Keep this for navbar offset */
+    min-height: auto;
+    padding-bottom: 40px; /* Add some bottom padding */
+    
+    /* Add these for better scrolling: */
+    width: 100%;
+    max-width: none;
 }

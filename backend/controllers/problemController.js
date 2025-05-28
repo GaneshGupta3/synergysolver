@@ -82,9 +82,20 @@ const addMultipleProblems = async (req, res) => {
 
         const insertedProblems = await Problem.insertMany(problemsWithIssuer);
 
+        const user = await User.findById(issuedBy._id);
+        insertedProblems.forEach((problem) => {
+            user.issuedProblems.push({
+                problemId: problem._id,
+                solved: false,
+            });
+        });
+        await user.save();
         res.status(201).json({
             message: "Problems added successfully",
-            data: insertedProblems,
+            data: {
+                insertedProblems : insertedProblems,
+                user : user,
+            },
         });
     } catch (error) {
         console.error("Error adding multiple problems:", error);
@@ -124,6 +135,10 @@ const attemptProblem = async (req, res) => {
         const user = await findUserWithValidation(userId, res);
         user.solvingProblems.push({ problemId });
         await user.save();
+        await problem.populate("issuedBy", "username email _id");
+        await problem.populate("accessPending.solverId", "username email _id");
+        await problem.populate("attempters.userId", "username email _id");
+        
 
         return res.status(200).json({
             success: true,
@@ -201,7 +216,7 @@ const grantAccess = async (req, res) => {
 const getSpecificProblem = async (req, res) => {
     try {
         const { problemId } = req.params;
-        const problem = await Problem.findById(problemId).populate("issuedBy", "username , email");
+        const problem = await Problem.findById(problemId).populate("issuedBy", "username , email").populate("accessPending.solverId", "username email _id").populate("attempters.userId", "username email _id");
         return res.status(200).json({
             success: true,
             data: {problem : problem , user : req.user},

@@ -24,10 +24,28 @@ export default function ProblemDetails() {
     const [copyLink, setCopyLink] = useState("copy link");
     const { problemId } = useParams();
     const [currentUser, setCurrentUser] = useState(null);
+    const [expandedSection, setExpandedSection] = useState({
+        attempters: false,
+        accessPending: false,
+    });
     const dispatch = useDispatch();
 
     const location = useLocation();
     const currentURL = `${window.location.origin}${location.pathname}${location.search}`;
+
+    const toggleExpandedAccessPending = () => {
+        setExpandedSection((prev) => ({
+            ...prev,
+            accessPending: !prev.accessPending,
+        }));
+    };
+
+    const toggleExpandedAttempters = () => {
+        setExpandedSection((prev) => ({
+            ...prev,
+            attempters: !expandedSection.attempters,
+        }));
+    };
 
     const requestAccess = async () => {
         try {
@@ -317,21 +335,82 @@ export default function ProblemDetails() {
                 {/* Access Pending */}
                 {problem.accessPending && problem.accessPending.length > 0 && (
                     <div className="mb-6">
-                        <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
-                            <AlertTriangle size={18} />
-                            <span>
-                                Access Requests ({problem.accessPending.length})
+                        <h3 className="flex items-center gap-3 text-lg font-semibold mb-4 text-gray-800">
+                            <div className="p-2 bg-amber-100 rounded-lg">
+                                <AlertTriangle
+                                    size={18}
+                                    className="text-amber-600"
+                                />
+                            </div>
+                            <span>Access Requests</span>
+                            <span className="px-2 py-1 bg-amber-100 text-amber-700 text-sm font-medium rounded-full">
+                                {problem.accessPending.length}
                             </span>
                         </h3>
-                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
-                            <p className="text-gray-700">
-                                {problem.accessPending.length} user
-                                {problem.accessPending.length !== 1
-                                    ? "s"
-                                    : ""}{" "}
-                                waiting for access approval
-                            </p>
+
+                        <div
+                            onClick={toggleExpandedAccessPending}
+                            className="group p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md hover:border-amber-300 mb-4"
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+                                    <p className="text-gray-700 font-medium">
+                                        <span className="text-amber-600 font-semibold">
+                                            {problem.accessPending.length}
+                                        </span>{" "}
+                                        user
+                                        {problem.accessPending.length !== 1
+                                            ? "s"
+                                            : ""}{" "}
+                                        waiting for access approval
+                                    </p>
+                                </div>
+                                <div className="text-amber-500 group-hover:text-amber-600 transition-colors">
+                                    {expandedSection.accessPending ? "▼" : "▶"}
+                                </div>
+                            </div>
                         </div>
+
+                        {expandedSection.accessPending && (
+                            <div className="space-y-3 ml-4 border-l-2 border-amber-200 pl-4">
+                                {problem.accessPending.map((user, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <Link
+                                                to={`/profile/${user.solverId._id}`}
+                                                className="flex items-center gap-3 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                                            >
+                                                <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                                    {user.solverId.username
+                                                        .charAt(0)
+                                                        .toUpperCase()}
+                                                </div>
+                                                <span>
+                                                    {user.solverId.username}
+                                                </span>
+                                            </Link>
+
+                                            {currentUser &&
+                                                currentUser._id.toString() ===
+                                                    problem.issuedBy._id.toString() && (
+                                                    <div className="flex gap-2">
+                                                        <button className="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-medium text-sm">
+                                                            Block
+                                                        </button>
+                                                        <button className="px-3 py-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors font-medium text-sm">
+                                                            Accept
+                                                        </button>
+                                                    </div>
+                                                )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -340,18 +419,23 @@ export default function ProblemDetails() {
             <div className="p-6 bg-gray-50 border-t border-gray-200">
                 <div className="flex items-center flex-wrap gap-3">
                     {currentUser &&
-                        (currentUser._id.toString() ===
-                        problem.issuedBy._id.toString() ? null : problem.accessPending.some(
+                        problem.issuedBy &&
+                        (problem.issuedBy &&
+                        currentUser &&
+                        currentUser._id.toString() ===
+                            problem.issuedBy._id.toString() ? null : problem.accessPending &&
+                          problem.accessPending.some(
                               (entry) =>
-                                  entry.solverId.toString() ===
+                                  entry.solverId._id.toString() ===
                                   currentUser._id.toString()
                           ) ? (
                             <span className="text-yellow-500">
                                 Request Pending
                             </span>
-                        ) : problem.attempters.some(
+                        ) : problem.attempters &&
+                          problem.attempters.some(
                               (entry) =>
-                                  entry.userId.toString() ===
+                                  entry.userId._id.toString() ===
                                   currentUser._id.toString()
                           ) ? (
                             <span className="text-green-600">
