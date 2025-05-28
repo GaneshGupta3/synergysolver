@@ -59,7 +59,7 @@ const Problems = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
             {/* Header */}
-            <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
+            <div className="top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
                 <div className="max-w-7xl mx-auto px-6 py-6">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                         {/* Title */}

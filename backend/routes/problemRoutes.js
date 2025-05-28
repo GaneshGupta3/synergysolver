@@ -8,7 +8,7 @@ const {
     getSpecificProblem,
     getUnsolvedProblems,
     grantSolution,
-    requestAccess,
+    acceptRequest,
 } = require("../controllers/problemController");
 
 const ProblemRouter = express.Router();
@@ -21,12 +21,12 @@ ProblemRouter.post("/issueMultipleProblem", jwtAuth, addMultipleProblems);
 
 ProblemRouter.post("/attemptProblem/:problemId", jwtAuth, attemptProblem);
 
+ProblemRouter.post("/acceptRequest/:problemId" , jwtAuth , acceptRequest);
+
 ProblemRouter.get("/getProblem/:problemId", jwtAuth, getSpecificProblem);
 
 ProblemRouter.get("/getSolvedProblems", jwtAuth, getUnsolvedProblems);
 
 ProblemRouter.post("/grantSolution/:problemId", jwtAuth, grantSolution);
-
-ProblemRouter.post("/requestAccess/:problemId", jwtAuth , requestAccess)
 
 module.exports = ProblemRouter;

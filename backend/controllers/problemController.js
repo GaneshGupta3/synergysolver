@@ -93,8 +93,8 @@ const addMultipleProblems = async (req, res) => {
         res.status(201).json({
             message: "Problems added successfully",
             data: {
-                insertedProblems : insertedProblems,
-                user : user,
+                insertedProblems: insertedProblems,
+                user: user,
             },
         });
     } catch (error) {
@@ -112,7 +112,7 @@ const getAllProblems = async (req, res) => {
         res.status(200).json({
             success: true,
             count: problems.length,
-            data: {problems : problems , user : req.user},
+            data: { problems: problems, user: req.user },
         });
     } catch (error) {
         console.error("Error fetching problems:", error.message);
@@ -138,7 +138,6 @@ const attemptProblem = async (req, res) => {
         await problem.populate("issuedBy", "username email _id");
         await problem.populate("accessPending.solverId", "username email _id");
         await problem.populate("attempters.userId", "username email _id");
-        
 
         return res.status(200).json({
             success: true,
@@ -216,10 +215,13 @@ const grantAccess = async (req, res) => {
 const getSpecificProblem = async (req, res) => {
     try {
         const { problemId } = req.params;
-        const problem = await Problem.findById(problemId).populate("issuedBy", "username , email").populate("accessPending.solverId", "username email _id").populate("attempters.userId", "username email _id");
+        const problem = await Problem.findById(problemId)
+            .populate("issuedBy", "username , email")
+            .populate("accessPending.solverId", "username email _id")
+            .populate("attempters.userId", "username email _id");
         return res.status(200).json({
             success: true,
-            data: {problem : problem , user : req.user},
+            data: { problem: problem, user: req.user },
         });
     } catch (error) {
         console.error("Error fetching specific problem:", error.message);
@@ -340,9 +342,46 @@ const grantSolution = async (req, res) => {
     }
 };
 
-const requestAccess = async (req , res) => {
-    
-}
+const acceptRequest = async (req, res) => {
+    try {
+        const { problemId } = req.params;
+        const { attempterId } = req.body; // ID of the user to whom access is granted
+
+        const problem = await findProblemWithValidation(problemId, res);
+
+        problem.accessPending = problem.accessPending.filter(
+            (p) => p.solverId.toString() !== attempterId
+        );
+
+        problem.attempters.push({ userId: attempterId, solved: false });
+        await problem.save();
+
+        const attempter = await findUserWithValidation(attempterId, res);
+
+        attempter.solvingProblems.find(
+            (p) => p.problemId.toString() === problemId.toString()
+        ).granted = true;
+        await attempter.save();
+        
+        await problem.populate("issuedBy", "username email _id");
+        await problem.populate("accessPending.solverId", "username email _id");
+        await problem.populate("attempters.userId", "username email _id");
+        return res.status(200).json({
+            success: true,
+            message: "Access granted successfully",
+            data: {
+                problem,
+                attempter,
+            },
+        });
+    } catch (error) {
+        console.error("Error accepting request:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
 
 module.exports = {
     issueProblem,
@@ -352,5 +391,5 @@ module.exports = {
     getSpecificProblem,
     getUnsolvedProblems,
     grantSolution,
-    requestAccess
+    acceptRequest,
 };
