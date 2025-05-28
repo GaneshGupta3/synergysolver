@@ -4,26 +4,39 @@ import Problem from "./Problem";
 import { useDispatch } from "react-redux";
 import { authSliceActions } from "../../store/authSlice";
 import DropDown from "./DropDown";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaSearch, FaFilter } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Problems = () => {
     const [problems, setProblems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
     const dispatch = useDispatch();
+
+    const difficultyOptions = ["All", "Easy", "Medium", "Hard"];
+    const topicOptions = [
+        "All",
+        "React",
+        "JavaScript",
+        "Python",
+        "Algorithm",
+        "Database",
+    ];
+    const statusOptions = ["All", "Solved", "Attempted", "Not Started"];
+    const sortOptions = ["Newest", "Oldest", "Difficulty", "Most Popular"];
 
     useEffect(() => {
         const fetchProblems = async () => {
             try {
                 setLoading(true);
                 const response = await axios.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/api/problem/getAllProblems`,
+                    `${
+                        import.meta.env.VITE_API_BASE_URL
+                    }/api/problem/getAllProblems`,
                     { withCredentials: true }
                 );
                 await dispatch(authSliceActions.login(response.data.data.user));
                 setProblems(response.data.data.problems);
-                console.log(response.data.data.problem);
-                console.log(response.data.data.user);
             } catch (error) {
                 console.error("Failed to fetch problems:", error);
             } finally {
@@ -33,75 +46,105 @@ const Problems = () => {
         fetchProblems();
     }, []);
 
-    return (
-        <div className="flex flex-col items-center justify-start p-6 bg-gradient-to-br from-gray-100 to-gray-300 min-h-screen overflow-y-auto scrollbar-hide max-h-[80vh]">
-            <h1 className="text-4xl font-extrabold text-gray-800 mb-8 drop-shadow-sm tracking-wide">
-                🧠 Problem List
-            </h1>
+    const filteredProblems = problems.filter(
+        (problem) =>
+            problem.problemStatement
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()) ||
+            problem.tags.some((tag) =>
+                tag.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+    );
 
-            {/* The entire content area will be scrollable */}
-            <div className="w-full bg-white/60 backdrop-blur-md shadow-xl rounded-2xl">
-                <div className="p-6">
-                    {/* Dropdown Filters - Now included in scrollable area */}
-                    <div className="flex flex-wrap justify-center gap-4 border-b border-gray-300 pb-4 mb-6">
-                        <DropDown text="Difficulty" />
-                        <DropDown text="Topic" />
-                        <DropDown text="Status" />
-                        <DropDown text="Sort By" />
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+            {/* Header */}
+            <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
+                <div className="max-w-7xl mx-auto px-6 py-6">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                        {/* Title */}
+                        <div>
+                            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                                🧠 Problem Arena
+                            </h1>
+                            <p className="text-gray-600">
+                                Discover and solve challenging problems
+                            </p>
+                        </div>
+
+                        {/* Search Bar */}
+                        <div className="relative flex-1 max-w-md">
+                            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Search problems or tags..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-12 pr-4 py-3 text-black bg-white/90 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                            />
+                        </div>
                     </div>
 
-                    {/* Problems List */}
-                    {loading ? (
-                        <div className="text-center text-gray-600 text-lg animate-pulse">
-                            Loading problems...
+                    {/* Filters */}
+                    <div className="flex flex-wrap items-center gap-4 mt-6">
+                        <div className="flex items-center gap-2 text-gray-700">
+                            <FaFilter className="text-gray-500" />
+                            <span className="font-medium">Filters:</span>
                         </div>
-                    ) : problems.length > 0 ? (
-                        <div className="px-5 space-y-6">
-                            {problems.map((problem) => (
-                                <div key={problem._id} className="mb-6">
-                                    <Problem problem={problem} />
-                                </div>
-                            ))}
+                        <DropDown
+                            text="Difficulty"
+                            options={difficultyOptions}
+                        />
+                        <DropDown text="Topic" options={topicOptions} />
+                        <DropDown text="Status" options={statusOptions} />
+                        <DropDown text="Sort By" options={sortOptions} />
+
+                        {/* Results count */}
+                        <div className="ml-auto text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">
+                            {filteredProblems.length} problems found
                         </div>
-                    ) : (
-                        <div className="text-center text-gray-500 text-md">
-                            No problems available.
-                        </div>
-                    )}
+                    </div>
                 </div>
             </div>
 
-            {/* Floating Add Button - Outside the scrollable area */}
+            {/* Content */}
+            <div className="max-w-7xl mx-auto px-6 py-8">
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                        <div className="text-gray-600 text-lg">
+                            Loading amazing problems...
+                        </div>
+                    </div>
+                ) : filteredProblems.length > 0 ? (
+                    <div className="grid gap-6">
+                        {filteredProblems.map((problem) => (
+                            <Problem key={problem._id} problem={problem} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20">
+                        <div className="text-6xl mb-4">🔍</div>
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                            No problems found
+                        </h3>
+                        <p className="text-gray-500">
+                            Try adjusting your search or filters
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            {/* Floating Add Button */}
             <Link
                 to="/addproblem"
-                className="fixed bottom-6 right-6 cursor-pointer bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 z-10"
+                className="fixed bottom-8 right-8 group cursor-pointer bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-110 z-50"
                 title="Add new problem"
             >
-                <FaPlus className="text-lg" />
+                <FaPlus className="text-lg group-hover:rotate-90 transition-transform duration-300" />
             </Link>
         </div>
     );
 };
-
-/* Add this to your CSS or create a new style component */
-const scrollbarHideStyles = `
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
-`;
-
-// Add styles to head
-if (typeof document !== 'undefined') {
-  const styleElement = document.createElement('style');
-  styleElement.innerHTML = scrollbarHideStyles;
-  document.head.appendChild(styleElement);
-}
 
 export default Problems;

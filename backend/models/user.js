@@ -21,6 +21,19 @@ const UserSchema = new mongoose.Schema(
             type: String,
             // required: true,
         },
+        savedProblems: [
+            {
+                problemId: {
+                    type: mongoose.Types.ObjectId,
+                    ref: "Problem",
+                    required: true,
+                },
+                savedAt: {
+                    type: Date,
+                    default: Date.now, // Stores save time
+                },
+            },
+        ],
         solvingProblems: [
             {
                 problemId: {

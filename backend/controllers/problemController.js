@@ -106,7 +106,7 @@ const addMultipleProblems = async (req, res) => {
 const getAllProblems = async (req, res) => {
     try {
         const problems = await Problem.find()
-            .populate("issuedBy", "name email") // optional: populate user info
+            .populate("issuedBy", "username email") // optional: populate user info
             .sort({ createdAt: -1 }); // latest first
 
         res.status(200).json({

@@ -17,7 +17,7 @@ const Navbar = ({ transparent }) => {
 
     return (
         <nav
-            className={`fixed text-black top-0 left-0 w-full z-50 h-20 px-6 flex items-center justify-around transition-all duration-300 bg-gradient-to-br from-gray-100 to-gray-300/80 backdrop-blur-sm shadow-lg rounded-b-2xl
+            className={`fixed text-black top-0 left-0 w-full z-50 h-20 px-6 flex items-center justify-around transition-all duration-300 bg-gradient-to-br from-gray-100/20 to-gray-300/20 backdrop-blur-sm shadow-lg rounded-b-2xl
             `}
         >
             {/* Logo */}

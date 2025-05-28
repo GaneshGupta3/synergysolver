@@ -255,7 +255,7 @@ export default function ProblemDetails() {
                     <div className="mb-6">
                         <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
                             <Github size={18} />
-                            <span>GitHub Repository</span>
+                            <span>Upstream  Repository</span>
                         </h3>
                         <a
                             href={problem.githubLink}
