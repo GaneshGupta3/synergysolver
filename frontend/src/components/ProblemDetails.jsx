@@ -428,7 +428,7 @@ export default function ProblemDetails() {
                                         </button>
                                     </div>
 
-                                    <div className="space-y-3">
+                                    {expandedSection.attempters ? <div className="space-y-3">
                                         {(expandedSection.attempters
                                             ? problem.attempters
                                             : problem.attempters.slice(0, 3)
@@ -466,7 +466,7 @@ export default function ProblemDetails() {
                                                 )}
                                             </div>
                                         ))}
-                                    </div>
+                                    </div> : null}
 
                                     {!expandedSection.attempters &&
                                         problem.attempters.length > 3 && (
