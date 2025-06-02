@@ -9,6 +9,7 @@ const {
     getUnsolvedProblems,
     grantSolution,
     acceptRequest,
+    rejectRequest,
 } = require("../controllers/problemController");
 
 const ProblemRouter = express.Router();
@@ -22,6 +23,8 @@ ProblemRouter.post("/issueMultipleProblem", jwtAuth, addMultipleProblems);
 ProblemRouter.post("/attemptProblem/:problemId", jwtAuth, attemptProblem);
 
 ProblemRouter.post("/acceptRequest/:problemId" , jwtAuth , acceptRequest);
+
+ProblemRouter.post("/rejectRequest/:problemId" , jwtAuth , rejectRequest);
 
 ProblemRouter.get("/getProblem/:problemId", jwtAuth, getSpecificProblem);
 

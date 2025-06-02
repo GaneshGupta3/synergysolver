@@ -128,14 +128,18 @@ const attemptProblem = async (req, res) => {
     try {
         const { problemId } = req.params; // assuming problemId is passed in the URL
         const userId = req.user._id; // assuming req.user is populated by auth middleware
-        const { proposedSolution } = req.body; 
+        const { proposedSolution } = req.body;
         const problem = await findProblemWithValidation(problemId, res);
-        problem.accessPending.push({ solverId: userId , proposedSolution :  proposedSolution});
+        problem.accessPending.push({
+            solverId: userId,
+            proposedSolution: proposedSolution,
+        });
         await problem.save();
 
         const user = await findUserWithValidation(userId, res);
         user.solvingProblems.push({ problemId });
         await user.save();
+
         await problem.populate("issuedBy", "username email _id");
         await problem.populate("accessPending.solverId", "username email _id");
         await problem.populate("attempters.userId", "username email _id");
@@ -157,68 +161,12 @@ const attemptProblem = async (req, res) => {
     }
 };
 
-const grantAccess = async (req, res) => {
-    try {
-        const { attempterId } = req.body; // ID of the user to whom access is granted
-        const { problemId } = req.params;
-        const issuerId = req.user._id;
-        const problem = await Problem.findById(problemId);
-        if (problem.issuedBy.toString() !== issuerId.toString()) {
-            return res.status(404).json({
-                success: false,
-                message: "you are not authorized to grant the access",
-            });
-        }
-
-        if (!problem) {
-            return res.status(404).json({
-                success: false,
-                message: "Problem not found",
-            });
-        }
-
-        problem.accessPending = problem.accessPending.filter(
-            (p) => p.solverId.toString() !== attempterId
-        );
-
-        problem.attempters.push({ userId: attempterId, solved: false });
-        await problem.save();
-
-        const attempter = await User.findById(attempterId);
-        if (!attempter) {
-            return res.status(404).json({
-                success: false,
-                message: "Attempter not found",
-            });
-        }
-        attempter.solvingProblems.find(
-            (p) => p.problemId.toString() === problemId.toString()
-        ).granted = true;
-        await attempter.save();
-
-        return res.status(200).json({
-            success: true,
-            message: "Access granted successfully",
-            data: {
-                problem,
-                attempter,
-            },
-        });
-    } catch (error) {
-        console.error("Error granting access:", error.message);
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
-    }
-};
-
 const getSpecificProblem = async (req, res) => {
     try {
         const { problemId } = req.params;
         const problem = await Problem.findById(problemId)
             .populate("issuedBy", "username , email")
-            .populate("accessPending.solverId", "username email _id")
+            .populate("accessPending.solverId", "username email _id skills")
             .populate("attempters.userId", "username email _id");
         return res.status(200).json({
             success: true,
@@ -350,11 +298,19 @@ const acceptRequest = async (req, res) => {
 
         const problem = await findProblemWithValidation(problemId, res);
 
+        const attempterWithProposedSolution = problem.accessPending.filter(
+            (p) => p.solverId.toString() === attempterId
+        );
+
         problem.accessPending = problem.accessPending.filter(
             (p) => p.solverId.toString() !== attempterId
         );
 
-        problem.attempters.push({ userId: attempterId, solved: false });
+        problem.attempters.push({
+            userId: attempterId,
+            solved: false,
+            proposedSolution: attempterWithProposedSolution.proposedSolution,
+        });
         await problem.save();
 
         const attempter = await findUserWithValidation(attempterId, res);
@@ -363,7 +319,7 @@ const acceptRequest = async (req, res) => {
             (p) => p.problemId.toString() === problemId.toString()
         ).granted = true;
         await attempter.save();
-        
+
         await problem.populate("issuedBy", "username email _id");
         await problem.populate("accessPending.solverId", "username email _id");
         await problem.populate("attempters.userId", "username email _id");
@@ -384,6 +340,72 @@ const acceptRequest = async (req, res) => {
     }
 };
 
+const rejectRequest = async (req, res) => {
+    try {
+        const { problemId } = req.params;
+        const { attempterId } = req.body;
+        const currentUser = req.user;
+
+        const problem = await findProblemWithValidation(problemId, res);
+
+        if (currentUser._id.toString() !== problem.issuedBy.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to reject this request",
+            });
+        }
+
+        // Find the request to reject
+        const rejectedRequest = problem.accessPending.find(
+            (p) => p.solverId.toString() === attempterId.toString()
+        );
+
+        console.log(rejectedRequest);
+
+        if (!rejectedRequest) {
+            return res.status(404).json({
+                success: false,
+                message: "Request not found in accessPending",
+            });
+        }
+
+        // Move it to accessRejected
+        problem.accessRejected.push(rejectedRequest);
+
+        // Remove from accessPending
+        problem.accessPending = problem.accessPending.filter(
+            (p) => p.solverId.toString() !== attempterId.toString()
+        );
+
+        const requester = await findUserWithValidation(attempterId, res);
+        if (!requester) return; // Validation already handles response
+
+        // Remove the problem from the requester's solvingProblems
+        requester.solvingProblems = requester.solvingProblems.filter(
+            (r) => r.problemId.toString() !== problemId.toString()
+        );
+
+        await requester.save();
+        await problem.save();
+        await problem.populate("issuedBy", "username email _id");
+        await problem.populate("accessPending.solverId", "username email _id");
+        await problem.populate("attempters.userId", "username email _id");
+       
+
+        return res.status(200).json({
+            success: true,
+            message: "Request rejected successfully",
+            problem: problem
+        });
+    } catch (error) {
+        console.error("Error rejecting request:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
 module.exports = {
     issueProblem,
     getAllProblems,
@@ -393,4 +415,5 @@ module.exports = {
     getUnsolvedProblems,
     grantSolution,
     acceptRequest,
+    rejectRequest,
 };
