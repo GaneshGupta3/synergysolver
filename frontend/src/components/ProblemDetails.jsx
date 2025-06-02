@@ -15,12 +15,14 @@ import {
     Eye,
     ChevronDown,
     ChevronUp,
+    Send,
 } from "lucide-react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { authSliceActions } from "../store/authSlice";
 import { CiLink } from "react-icons/ci";
+import { useRef } from "react";
 
 // Problem Display Component
 export default function ProblemDetails() {
@@ -30,10 +32,21 @@ export default function ProblemDetails() {
     const [copyLink, setCopyLink] = useState("Copy Link");
     const { problemId } = useParams();
     const [currentUser, setCurrentUser] = useState(null);
+    const proposedSolution = useRef(null);
     const [expandedSection, setExpandedSection] = useState({
         attempters: false,
         accessPending: false,
+        requestAccess: false,
     });
+    const [expandedApproaches, setExpandedApproaches] = useState({});
+
+    const toggleApproachVisibility = (approachId) => {
+        setExpandedApproaches((prev) => ({
+            ...prev,
+            [approachId]: !prev[approachId],
+        }));
+    };
+
     const dispatch = useDispatch();
 
     const location = useLocation();
@@ -53,14 +66,23 @@ export default function ProblemDetails() {
         }));
     };
 
-    const handleAcceptRequest = async (solverId , problemId) => {
+    const toggleExpandedRequestAccess = () => {
+        setExpandedSection((prev) => ({
+            ...prev,
+            requestAccess: !expandedSection.requestAccess,
+        }));
+    };
+
+    const handleAcceptRequest = async (solverId, problemId) => {
         try {
             const response = await axios.post(
-                `${import.meta.env.VITE_API_BASE_URL}/api/problem/acceptRequest/${problemId}`,
-                {attempterId : solverId},
-                {withCredentials: true}
+                `${
+                    import.meta.env.VITE_API_BASE_URL
+                }/api/problem/acceptRequest/${problemId}`,
+                { attempterId: solverId },
+                { withCredentials: true }
             );
-            console.log(response.data)
+            console.log(response.data);
             setProblem(response.data.data.problem);
         } catch (error) {
             console.error("Error accepting request:", error);
@@ -68,13 +90,15 @@ export default function ProblemDetails() {
         }
     };
 
+    const handleBlockRequest = async () => {};
+
     const requestAccess = async () => {
         try {
             const response = await axios.post(
                 `${
                     import.meta.env.VITE_API_BASE_URL
                 }/api/problem/attemptProblem/${problemId}`,
-                {},
+                { proposedSolution: proposedSolution.current.value },
                 { withCredentials: true }
             );
             if (response.data.success) {
@@ -114,6 +138,7 @@ export default function ProblemDetails() {
 
                 const problemData = response.data.data.problem;
                 setProblem(problemData);
+                console.log(problemData);
 
                 if (
                     !problemData ||
@@ -396,8 +421,8 @@ export default function ProblemDetails() {
                         {/* Attempters */}
                         {problem.attempters &&
                             problem.attempters.length > 0 && (
-                                <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-6">
-                                    <div className="flex items-center justify-between mb-4">
+                                <div onClick={toggleExpandedAttempters} className="bg-purple-50/50 border cursor-pointer border-purple-100 rounded-xl p-6">
+                                    <div className="flex items-center justify-between ">
                                         <h3 className="flex items-center gap-3 text-xl font-bold text-gray-800">
                                             <div className="p-2 bg-purple-100 rounded-lg">
                                                 <Users
@@ -411,7 +436,7 @@ export default function ProblemDetails() {
                                             </span>
                                         </h3>
                                         <button
-                                            onClick={toggleExpandedAttempters}
+                                            
                                             className="flex items-center gap-2 text-purple-600 hover:text-purple-800 font-medium transition-colors"
                                         >
                                             {expandedSection.attempters ? (
@@ -428,45 +453,51 @@ export default function ProblemDetails() {
                                         </button>
                                     </div>
 
-                                    {expandedSection.attempters ? <div className="space-y-3">
-                                        {(expandedSection.attempters
-                                            ? problem.attempters
-                                            : problem.attempters.slice(0, 3)
-                                        ).map((attempter, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex items-center justify-between p-4 bg-white border border-purple-100 rounded-lg hover:shadow-md transition-shadow"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                                                        {(
-                                                            attempter.userId
+                                    {expandedSection.attempters ? (
+                                        <div className="space-y-3">
+                                            {(expandedSection.attempters
+                                                ? problem.attempters
+                                                : problem.attempters.slice(0, 3)
+                                            ).map((attempter, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex items-center justify-between p-4 bg-white border border-purple-100 rounded-lg hover:shadow-md transition-shadow"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                                            {(
+                                                                attempter.userId
+                                                                    ?.username ||
+                                                                `User ${
+                                                                    index + 1
+                                                                }`
+                                                            )
+                                                                .charAt(0)
+                                                                .toUpperCase()}
+                                                        </div>
+                                                        <span className="font-medium text-gray-700">
+                                                            {attempter.userId
                                                                 ?.username ||
-                                                            `User ${index + 1}`
-                                                        )
-                                                            .charAt(0)
-                                                            .toUpperCase()}
+                                                                `User ${
+                                                                    index + 1
+                                                                }`}
+                                                        </span>
                                                     </div>
-                                                    <span className="font-medium text-gray-700">
-                                                        {attempter.userId
-                                                            ?.username ||
-                                                            `User ${index + 1}`}
-                                                    </span>
+                                                    {attempter.solved ? (
+                                                        <span className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1 rounded-full font-medium">
+                                                            <Check size={16} />
+                                                            Solved
+                                                        </span>
+                                                    ) : (
+                                                        <span className="flex items-center gap-2 text-orange-600 bg-orange-50 px-3 py-1 rounded-full font-medium">
+                                                            <Clock size={16} />
+                                                            In Progress
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                {attempter.solved ? (
-                                                    <span className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1 rounded-full font-medium">
-                                                        <Check size={16} />
-                                                        Solved
-                                                    </span>
-                                                ) : (
-                                                    <span className="flex items-center gap-2 text-orange-600 bg-orange-50 px-3 py-1 rounded-full font-medium">
-                                                        <Clock size={16} />
-                                                        In Progress
-                                                    </span>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div> : null}
+                                            ))}
+                                        </div>
+                                    ) : null}
 
                                     {!expandedSection.attempters &&
                                         problem.attempters.length > 3 && (
@@ -489,10 +520,8 @@ export default function ProblemDetails() {
                                                 className="text-amber-600"
                                             />
                                         </div>
-                                        <span>Access Requests</span>
-                                        <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-bold rounded-full">
-                                            {problem.accessPending.length}
-                                        </span>
+                                        <span>Access Requests ({problem.accessPending.length})</span>
+                                        
                                     </h3>
 
                                     <div
@@ -529,58 +558,244 @@ export default function ProblemDetails() {
                                     </div>
 
                                     {expandedSection.accessPending && (
-                                        <div className="space-y-3 border-l-4 border-amber-200 pl-6">
-                                            {problem.accessPending.map(
-                                                (user, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-                                                    >
-                                                        <div className="flex items-center justify-between">
-                                                            <Link
-                                                                to={`/profile/${user.solverId._id}`}
-                                                                className="flex items-center gap-3 text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                                                            >
-                                                                <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                                                                    {user.solverId.username
-                                                                        .charAt(
-                                                                            0
-                                                                        )
-                                                                        .toUpperCase()}
-                                                                </div>
-                                                                <span>
-                                                                    {
-                                                                        user
-                                                                            .solverId
-                                                                            .username
-                                                                    }
-                                                                </span>
-                                                            </Link>
+                                        <div className="space-y-4">
+                                            {/* Section Header */}
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <div className="w-1 h-8 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full"></div>
+                                                <div>
+                                                    <h3 className="text-lg font-semibold text-gray-800">
+                                                        Pending Access Requests
+                                                    </h3>
+                                                    <p className="text-sm text-gray-500">
+                                                        {
+                                                            problem
+                                                                .accessPending
+                                                                .length
+                                                        }{" "}
+                                                        request
+                                                        {problem.accessPending
+                                                            .length !== 1
+                                                            ? "s"
+                                                            : ""}{" "}
+                                                        awaiting review
+                                                    </p>
+                                                </div>
+                                            </div>
 
-                                                            {currentUser &&
-                                                                currentUser._id.toString() ===
-                                                                    problem.issuedBy._id.toString() && (
-                                                                    <div className="flex gap-2">
-                                                                        <button className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-medium text-sm">
-                                                                            Block
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() =>
-                                                                                handleAcceptRequest(
+                                            {/* Request Cards */}
+                                            <div className="space-y-4">
+                                                {problem.accessPending.map(
+                                                    (user, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className="group relative bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-300 ease-out"
+                                                        >
+                                                            {/* Gradient accent line */}
+                                                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 rounded-t-xl opacity-60 group-hover:opacity-100 transition-opacity"></div>
+
+                                                            {/* Main content */}
+                                                            <div className="flex items-start justify-between">
+                                                                {/* User info */}
+                                                                <Link
+                                                                    to={`/profile/${user.solverId._id}`}
+                                                                    className="flex items-center gap-4 text-gray-800 hover:text-blue-600 transition-colors group/link"
+                                                                >
+                                                                    <div className="relative">
+                                                                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md group-hover/link:shadow-lg transition-shadow">
+                                                                            {user.solverId.username
+                                                                                .charAt(
+                                                                                    0
+                                                                                )
+                                                                                .toUpperCase()}
+                                                                        </div>
+                                                                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="font-semibold text-lg group-hover/link:text-blue-600 transition-colors">
+                                                                            {
+                                                                                user
+                                                                                    .solverId
+                                                                                    .username
+                                                                            }
+                                                                        </span>
+                                                                        <div className="flex items-center gap-2 mt-1">
+                                                                            <span className="text-sm text-gray-500">
+                                                                                Requested
+                                                                                access
+                                                                            </span>
+                                                                            <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">
+                                                                                Pending
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </Link>
+
+                                                                {/* Action buttons - only for problem owner */}
+                                                                {currentUser &&
+                                                                    currentUser._id.toString() ===
+                                                                        problem.issuedBy._id.toString() && (
+                                                                        <div className="flex items-center gap-3">
+                                                                            <button className="group/btn flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:shadow-md transition-all duration-200 font-medium text-sm border border-red-200 hover:border-red-300">
+                                                                                <svg
+                                                                                    className="w-4 h-4 group-hover/btn:scale-110 transition-transform"
+                                                                                    fill="none"
+                                                                                    stroke="currentColor"
+                                                                                    viewBox="0 0 24 24"
+                                                                                >
+                                                                                    <path
+                                                                                        strokeLinecap="round"
+                                                                                        strokeLinejoin="round"
+                                                                                        strokeWidth="2"
+                                                                                        d="M6 18L18 6M6 6l12 12"
+                                                                                    />
+                                                                                </svg>
+                                                                                Block
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() =>
+                                                                                    handleAcceptRequest(
+                                                                                        user
+                                                                                            .solverId
+                                                                                            ._id,
+                                                                                        problem._id
+                                                                                    )
+                                                                                }
+                                                                                className="group/btn flex items-center gap-2 px-5 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 hover:shadow-md transition-all duration-200 font-medium text-sm border border-green-200 hover:border-green-300"
+                                                                            >
+                                                                                <svg
+                                                                                    className="w-4 h-4 group-hover/btn:scale-110 transition-transform"
+                                                                                    fill="none"
+                                                                                    stroke="currentColor"
+                                                                                    viewBox="0 0 24 24"
+                                                                                >
+                                                                                    <path
+                                                                                        strokeLinecap="round"
+                                                                                        strokeLinejoin="round"
+                                                                                        strokeWidth="2"
+                                                                                        d="M5 13l4 4L19 7"
+                                                                                    />
+                                                                                </svg>
+                                                                                Accept
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+                                                            </div>
+
+                                                            {/* View approach button */}
+                                                            {(currentUser._id.toString() ===
+                                                                user.solverId._id.toString() ||
+                                                                problem.issuedBy._id.toString() ===
+                                                                    currentUser._id.toString()) && (
+                                                                <div className="mt-6 border-t border-gray-100 pt-4">
+                                                                    <button
+                                                                        onClick={() =>
+                                                                            toggleApproachVisibility(
+                                                                                user
+                                                                                    .solverId
+                                                                                    ._id
+                                                                            )
+                                                                        }
+                                                                        className="group/toggle flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                                                                    >
+                                                                        <svg
+                                                                            className={`w-4 h-4 transition-transform duration-200 ${
+                                                                                expandedApproaches[
                                                                                     user
                                                                                         .solverId
-                                                                                        ._id , problem._id
-                                                                                )
-                                                                            }
-                                                                            className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors font-medium text-sm"
+                                                                                        ._id
+                                                                                ]
+                                                                                    ? "rotate-180"
+                                                                                    : ""
+                                                                            }`}
+                                                                            fill="none"
+                                                                            stroke="currentColor"
+                                                                            viewBox="0 0 24 24"
                                                                         >
-                                                                            Accept
-                                                                        </button>
+                                                                            <path
+                                                                                strokeLinecap="round"
+                                                                                strokeLinejoin="round"
+                                                                                strokeWidth="2"
+                                                                                d="M19 9l-7 7-7-7"
+                                                                            />
+                                                                        </svg>
+                                                                        {expandedApproaches[
+                                                                            user
+                                                                                .solverId
+                                                                                ._id
+                                                                        ]
+                                                                            ? "Hide"
+                                                                            : "Proposed Solution"}
+                                                                    </button>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Expanded approach */}
+                                                            {expandedApproaches[
+                                                                user.solverId
+                                                                    ._id
+                                                            ] && (
+                                                                <div className="mt-4 overflow-hidden">
+                                                                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-5 animate-in slide-in-from-top-2 duration-300">
+                                                                        <div className="flex items-start gap-3">
+                                                                            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                                                                                <svg
+                                                                                    className="w-4 h-4 text-white"
+                                                                                    fill="none"
+                                                                                    stroke="currentColor"
+                                                                                    viewBox="0 0 24 24"
+                                                                                >
+                                                                                    <path
+                                                                                        strokeLinecap="round"
+                                                                                        strokeLinejoin="round"
+                                                                                        strokeWidth="2"
+                                                                                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                                                                                    />
+                                                                                </svg>
+                                                                            </div>
+                                                                            <div className="flex-1">
+                                                                                <h4 className="font-semibold text-gray-800 mb-2">
+                                                                                    Proposed
+                                                                                    Solution
+                                                                                </h4>
+                                                                                <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
+                                                                                    {
+                                                                                        user.proposedSolution
+                                                                                    }
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-                                                                )}
+                                                                </div>
+                                                            )}
                                                         </div>
+                                                    )
+                                                )}
+                                            </div>
+
+                                            {/* Empty state (if needed) */}
+                                            {problem.accessPending.length ===
+                                                0 && (
+                                                <div className="text-center py-12">
+                                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                        <svg
+                                                            className="w-8 h-8 text-gray-400"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth="2"
+                                                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                                                            />
+                                                        </svg>
                                                     </div>
-                                                )
+                                                    <p className="text-gray-500">
+                                                        No pending access
+                                                        requests
+                                                    </p>
+                                                </div>
                                             )}
                                         </div>
                                     )}
@@ -590,7 +805,7 @@ export default function ProblemDetails() {
 
                     {/* Problem Actions */}
                     <div className="p-8 bg-gradient-to-r from-gray-50 to-blue-50 border-t border-gray-200">
-                        <div className="flex items-center flex-wrap gap-4">
+                        <div className="flex items-start flex-wrap gap-4">
                             {currentUser &&
                                 problem.issuedBy &&
                                 (problem.issuedBy &&
@@ -618,17 +833,66 @@ export default function ProblemDetails() {
                                         Submit Solution
                                     </button>
                                 ) : (
-                                    <button
-                                        onClick={requestAccess}
-                                        className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all font-medium shadow-md hover:shadow-lg"
-                                    >
-                                        Request Access
-                                    </button>
+                                    <div className="flex flex-col gap-4 w-full max-w-2xl">
+                                        <button
+                                            onClick={
+                                                toggleExpandedRequestAccess
+                                            }
+                                            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all font-medium shadow-md hover:shadow-lg"
+                                        >
+                                            Request Access
+                                        </button>
+
+                                        {expandedSection.requestAccess && (
+                                            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-lg">
+                                                <h4 className="text-lg font-semibold text-gray-800 mb-3">
+                                                    Describe Your Approach
+                                                </h4>
+                                                <p className="text-gray-600 text-sm mb-4">
+                                                    Please explain your proposed
+                                                    solution or approach to
+                                                    solving this problem. This
+                                                    helps the problem creator
+                                                    understand your methodology.
+                                                </p>
+
+                                                <div className="space-y-4">
+                                                    <textarea
+                                                        ref={proposedSolution}
+                                                        placeholder="Enter your approach, methodology, or proposed solution strategy..."
+                                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-800 placeholder-gray-500 min-h-[120px] bg-gray-50"
+                                                        rows={5}
+                                                    />
+
+                                                    <div className="flex items-center gap-3">
+                                                        <button
+                                                            onClick={
+                                                                requestAccess
+                                                            }
+                                                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium shadow-md hover:shadow-lg"
+                                                        >
+                                                            <Send size={16} />
+                                                            Send Request
+                                                        </button>
+
+                                                        <button
+                                                            onClick={
+                                                                toggleExpandedRequestAccess
+                                                            }
+                                                            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all font-medium"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 ))}
 
                             <button
                                 onClick={handleCopy}
-                                className="flex text-black items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-white hover:border-blue-300 transition-all font-medium shadow-sm hover:shadow-md"
+                                className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-white hover:border-blue-300 transition-all font-medium shadow-sm hover:shadow-md text-gray-700"
                             >
                                 <Share2 size={16} />
                                 {copyLink}

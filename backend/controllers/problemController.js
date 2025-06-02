@@ -128,8 +128,9 @@ const attemptProblem = async (req, res) => {
     try {
         const { problemId } = req.params; // assuming problemId is passed in the URL
         const userId = req.user._id; // assuming req.user is populated by auth middleware
+        const { proposedSolution } = req.body; 
         const problem = await findProblemWithValidation(problemId, res);
-        problem.accessPending.push({ solverId: userId });
+        problem.accessPending.push({ solverId: userId , proposedSolution :  proposedSolution});
         await problem.save();
 
         const user = await findUserWithValidation(userId, res);

@@ -25,6 +25,11 @@ const ProblemSchema = new mongoose.Schema({
                 ref: "User",
                 required: true,
             },
+            // Detailed Explanation (can include diagrams, flowcharts, or steps)
+            proposedSolution: {
+                type: String,
+                required: true,
+            }
         },
     ],
     accessRejected:[
@@ -73,7 +78,7 @@ const ProblemSchema = new mongoose.Schema({
     ],
     deadline: {
         type: Date,
-        default: 0, // Ensures the problem has a deadline
+        default: null, // Ensures the problem has a deadline
     },
     solved: {
         type: Boolean,
