@@ -46,12 +46,11 @@ GitHub Repo: [https://github.com/GaneshGupta3/synergysolver](https://github.com/
 
 ```bash
 git clone https://github.com/GaneshGupta3/synergysolver.git
-cd synergysolver
+cd synergysolver 
+```
 
 
-## Usage
-
-1. **Start the Development Server**
+2. **Start the Development Server**
 
 ```bash
 cd frontend
@@ -59,20 +58,20 @@ npm install
 npm run dev
 ```
 
-2. **Access the Application**
+3. **Access the Application**
 
 Open your browser and navigate to `http://localhost:3000` to access the application.
 
-3. **Start the Backend Server**
+4. **Start the Backend Server**
 ```bash
 cd server
 npm run dev
 ```
-4. **Access the Backend API**
+5. **Access the Backend API**
 
 The backend API will be running at `http://localhost:5000/api`. You can use tools like Postman or your browser to interact with the API endpoints.
 
-5. **Environment Variables**
+6. **Environment Variables**
 Create a `.env` file in the `server` directory and add the following variables:
 
 ```plaintext
