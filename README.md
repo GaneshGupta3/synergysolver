@@ -48,3 +48,23 @@ GitHub Repo: [https://github.com/GaneshGupta3/synergysolver](https://github.com/
 git clone https://github.com/GaneshGupta3/synergysolver.git
 cd synergysolver
 
+
+2. **Frontend Setup**
+
+```bash
+cd client
+npm install
+npm run dev
+
+3. **Backend Setup**
+
+```bash
+cd server
+npm install
+# Create a `.env` file and add the following variables:
+# (Update the values as needed)
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+PORT=3000
+# Start the backend server
+npm run dev
