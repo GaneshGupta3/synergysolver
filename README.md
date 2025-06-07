@@ -49,22 +49,34 @@ git clone https://github.com/GaneshGupta3/synergysolver.git
 cd synergysolver
 
 
-2. **Frontend Setup**
+## Usage
+
+1. **Start the Development Server**
 
 ```bash
-cd client
+cd frontend
 npm install
 npm run dev
+```
 
-3. **Backend Setup**
+2. **Access the Application**
 
+Open your browser and navigate to `http://localhost:3000` to access the application.
+
+3. **Start the Backend Server**
 ```bash
 cd server
-npm install
-# Create a `.env` file and add the following variables:
-# (Update the values as needed)
+npm run dev
+```
+4. **Access the Backend API**
+
+The backend API will be running at `http://localhost:5000/api`. You can use tools like Postman or your browser to interact with the API endpoints.
+
+5. **Environment Variables**
+Create a `.env` file in the `server` directory and add the following variables:
+
+```plaintext
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
-PORT=3000
-# Start the backend server
-npm run dev
+PORT=5000
+```
