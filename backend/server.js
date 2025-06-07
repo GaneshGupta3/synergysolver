@@ -18,6 +18,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
     cors({
+        
         origin: [
             "https://synergysolver.vercel.app",
             "http://localhost:5173"
