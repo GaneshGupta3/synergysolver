@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { authSliceActions } from "../store/authSlice";
-import Attempters from "./attempters";
+import Attempters from "./Attempters";
 import GithubLink from "./GithubLink";
 import Goodies from "./Goodies";
 import ProblemActions from "./ProblemActions";
