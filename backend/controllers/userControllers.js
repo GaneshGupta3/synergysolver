@@ -111,7 +111,7 @@ const editPastProjects = async (req, res) => {
 const searchUsers = async ( req , res ) =>{
     try {
         const { searchQuery } = req.body;
-        const users = await User.find({username : {$regex: searchQuery , $options: "i"}} , "username _id ");
+        const users = await User.find({username : {$regex: searchQuery , $options: "i"}} , "username _id profilePic");
         res.status(200).json({ users: users });
     }
     catch (error) {
