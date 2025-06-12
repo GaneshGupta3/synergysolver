@@ -29,7 +29,6 @@ const Problem = ({ problem }) => {
         return () => clearInterval(interval);
     }, [problem.deadline]);
 
-
     const getDifficultyConfig = (difficulty) => {
         switch (difficulty) {
             case "Easy":
@@ -68,24 +67,37 @@ const Problem = ({ problem }) => {
     return (
         <Link
             to={`/problemDetails/${problem._id}`}
-            className="group block cursor-pointer bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl border border-gray-200/50 hover:border-blue-200"
+            className="group block cursor-pointer bg-slate-800/20 backdrop-blur-sm shadow-lg rounded-2xl p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl border border-gray-200/50 hover:border-blue-200"
         >
             {/* Header */}
+
             <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    <h2 className="text-2xl font-bold text-white/70 mb-2  transition-colors line-clamp-2">
                         {problem.problemStatement}
                     </h2>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                            <FiUser size={14} />
-                            <span>
-                                By {problem.issuedBy?.username || "Anonymous"}
+                        <Link
+                            to={`/profile/${problem.issuedBy?._id}`}
+                            className="flex items-center bg-slate-400/30 p-1.5 rounded-md gap-1"
+                        >
+                            {problem.issuedBy?.profilePic.length > 0 ? (
+                                <div className="w-6 h-6 rounded-full overflow-hidden">
+                                    <img src={problem.issuedBy.profilePic} className="w-full h-full object-cover rounded-full" />
+                                </div>
+                            ) : (
+                                <FiUser size={14} className="text-white/70" />
+                            )}
+
+                            <span className="text-white/70">
+                                {problem.issuedBy?.username || "Anonymous"}
                             </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <FiClock size={14} />
-                            <span>{timeRemaining}</span>
+                        </Link>
+                        <div className="flex bg-slate-400/30 p-1.5 rounded-md items-center gap-1">
+                            <FiClock className="text-white/70" size={14} />
+                            <span className="text-white/70">
+                                {timeRemaining}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -101,8 +113,8 @@ const Problem = ({ problem }) => {
             {/* Tags Section */}
             <div className="mb-4">
                 <div className="flex items-center gap-2 mb-2">
-                    <FiTag size={16} className="text-gray-500" />
-                    <span className="text-sm font-medium text-gray-700">
+                    <FiTag size={16} className="text-white/70" />
+                    <span className="text-sm font-medium text-white/70">
                         Technologies
                     </span>
                 </div>
@@ -121,13 +133,18 @@ const Problem = ({ problem }) => {
             {/* Stats Footer */}
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span>
-                        💡 {problem.accessPending.length} Request Pending
+                    <span className="text-white/70">
+                        <span>💡</span> {problem.accessPending.length} Request
+                        Pending
                     </span>
-                    <span>👥 {problem.attempters.length} solvers</span>
-                    <span>⭐ 4.8 rating</span>
+                    <span className="text-white/70">
+                        👥 {problem.attempters.length} solvers
+                    </span>
+                    <span className="text-white/70">
+                        <span>⭐</span> 4.8 rating
+                    </span>
                 </div>
-                <div className="text-blue-600 font-medium text-sm group-hover:text-blue-700">
+                <div className="text-white/70 font-medium text-sm group-hover:text-purple-400">
                     View Details →
                 </div>
             </div>

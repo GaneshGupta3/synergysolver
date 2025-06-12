@@ -180,7 +180,6 @@ export default function ProblemDetails() {
 
                 updateTimeRemaining();
                 const interval = setInterval(updateTimeRemaining, 60000);
-                dispatch(authSliceActions.login(response.data.data.user));
                 setCurrentUser(response.data.data.user);
                 return () => clearInterval(interval);
             } catch (error) {
@@ -206,33 +205,33 @@ export default function ProblemDetails() {
             case "Easy":
                 return {
                     color: "bg-gradient-to-r from-green-400 to-green-500",
-                    textColor: "text-green-700",
-                    bgColor: "bg-green-50",
-                    borderColor: "border-green-200",
+                    textColor: "text-green-300",
+                    bgColor: "bg-green-900/20",
+                    borderColor: "border-green-500/30",
                     icon: "🟢",
                 };
             case "Medium":
                 return {
                     color: "bg-gradient-to-r from-yellow-400 to-orange-400",
-                    textColor: "text-orange-700",
-                    bgColor: "bg-orange-50",
-                    borderColor: "border-orange-200",
+                    textColor: "text-orange-300",
+                    bgColor: "bg-orange-900/20",
+                    borderColor: "border-orange-500/30",
                     icon: "🟡",
                 };
             case "Hard":
                 return {
                     color: "bg-gradient-to-r from-red-400 to-red-500",
-                    textColor: "text-red-700",
-                    bgColor: "bg-red-50",
-                    borderColor: "border-red-200",
+                    textColor: "text-red-300",
+                    bgColor: "bg-red-900/20",
+                    borderColor: "border-red-500/30",
                     icon: "🔴",
                 };
             default:
                 return {
                     color: "bg-gradient-to-r from-gray-400 to-gray-500",
-                    textColor: "text-gray-700",
-                    bgColor: "bg-gray-50",
-                    borderColor: "border-gray-200",
+                    textColor: "text-gray-300",
+                    bgColor: "bg-gray-700/20",
+                    borderColor: "border-gray-500/30",
                     icon: "⚪",
                 };
         }
@@ -246,9 +245,9 @@ export default function ProblemDetails() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+        <div className="min-h-screen bg-slate-800 pt-[120px] p-6">
             <div className="max-w-5xl mx-auto">
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden">
+                <div className="bg-slate-700/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 overflow-hidden">
                     {/* Problem Header */}
                     <ProblemHeader
                         formatDate={formatDate}
@@ -281,16 +280,16 @@ export default function ProblemDetails() {
                         {/* Attempters */}
                         {problem.attempters &&
                             problem.attempters.length > 0 && (
-                                <div className="bg-purple-50/50 border cursor-pointer border-purple-100 rounded-xl p-6">
+                                <div className="bg-slate-600/40 border cursor-pointer border-slate-500/50 rounded-xl p-6 hover:bg-slate-600/50 transition-colors">
                                     <div
                                         onClick={toggleExpandedAttempters}
                                         className="flex items-center justify-between mb-4"
                                     >
-                                        <h3 className="flex items-center  gap-3 text-xl font-bold text-gray-800">
-                                            <div className="p-2 bg-purple-100 rounded-lg">
+                                        <h3 className="flex items-center  gap-3 text-xl font-bold text-slate-100">
+                                            <div className="p-2 bg-purple-600/20 rounded-lg border border-purple-500/30">
                                                 <Users
                                                     size={20}
-                                                    className="text-purple-600"
+                                                    className="text-purple-300"
                                                 />
                                             </div>
                                             <span>
@@ -298,7 +297,7 @@ export default function ProblemDetails() {
                                                 {problem.attempters.length})
                                             </span>
                                         </h3>
-                                        <button className="flex items-center gap-2 text-purple-600 hover:text-purple-800 font-medium transition-colors">
+                                        <button className="flex items-center gap-2 text-purple-300 hover:text-purple-200 font-medium transition-colors">
                                             {expandedSection.attempters ? (
                                                 <>
                                                     Show Less{" "}
@@ -323,12 +322,12 @@ export default function ProblemDetails() {
                         {/* Access Pending */}
                         {problem.accessPending &&
                             problem.accessPending.length > 0 && (
-                                <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-6">
-                                    <h3 className="flex items-center gap-3 text-xl font-bold mb-4 text-gray-800">
-                                        <div className="p-2 bg-amber-100 rounded-lg">
+                                <div className="bg-slate-600/40 border border-slate-500/50 rounded-xl p-6">
+                                    <h3 className="flex items-center gap-3 text-xl font-bold mb-4 text-slate-100">
+                                        <div className="p-2 bg-amber-600/20 rounded-lg border border-amber-500/30">
                                             <AlertTriangle
                                                 size={20}
-                                                className="text-amber-600"
+                                                className="text-amber-300"
                                             />
                                         </div>
                                         <span>
@@ -339,13 +338,13 @@ export default function ProblemDetails() {
 
                                     <div
                                         onClick={toggleExpandedAccessPending}
-                                        className="group p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md hover:border-amber-300 mb-4"
+                                        className="group p-5 bg-slate-700/50 border border-slate-500/50 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-amber-500/50 hover:bg-slate-700/70 mb-4"
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
-                                                <p className="text-gray-700 font-medium">
-                                                    <span className="text-amber-600 font-bold">
+                                                <p className="text-slate-200 font-medium">
+                                                    <span className="text-amber-300 font-bold">
                                                         {
                                                             problem
                                                                 .accessPending
@@ -360,7 +359,7 @@ export default function ProblemDetails() {
                                                     waiting for access approval
                                                 </p>
                                             </div>
-                                            <div className="text-amber-500 group-hover:text-amber-600 transition-colors">
+                                            <div className="text-amber-400 group-hover:text-amber-300 transition-colors">
                                                 {expandedSection.accessPending ? (
                                                     <ChevronUp size={20} />
                                                 ) : (

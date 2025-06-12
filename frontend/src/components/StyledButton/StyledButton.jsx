@@ -9,6 +9,7 @@ const StyledButton = ({ executeFunction, displayText, disabled }) => {
         bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 cursor-pointer
         text-white font-semibold text-lg rounded-xl 
         shadow-lg hover:shadow-xl 
+        w-full
         transition duration-300 ease-in-out 
         transform hover:-translate-y-1 hover:scale-105 
         disabled:opacity-50 disabled:cursor-not-allowed

@@ -1,21 +1,18 @@
-import { useState, useEffect } from "react";
+import axios from "axios";
 import {
-    Activity,
-    Code,
-    Users,
-    BarChart2,
-    Search,
-    PlusCircle,
+    Award,
+    Bell,
     CheckCircle,
     Clock,
-    Award,
-    Briefcase,
-    Bell,
+    Code,
+    PlusCircle,
+    Search,
+    Users,
 } from "lucide-react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { authSliceActions } from "../../store/authSlice";
-import { useDispatch } from "react-redux";
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -62,7 +59,7 @@ export default function Dashboard() {
                         {
                             problemId: "1",
                             title: "Optimize Database Query",
-                            description:
+                            problemStatement:
                                 "Find a way to optimize the current database query that is causing performance issues.",
                             difficulty: "Medium",
                             tags: ["Database", "Performance"],
@@ -73,7 +70,7 @@ export default function Dashboard() {
                         {
                             problemId: "2",
                             title: "Fix Authentication Bug",
-                            description:
+                            problemStatement:
                                 "Users are occasionally getting logged out unexpectedly. Debug and fix the authentication system.",
                             difficulty: "Hard",
                             tags: ["Security", "Bug Fix"],
@@ -84,7 +81,29 @@ export default function Dashboard() {
                         {
                             problemId: "3",
                             title: "Implement Caching Layer",
-                            description:
+                            problemStatement:
+                                "Add a Redis caching layer to improve response times on frequently accessed data.",
+                            difficulty: "Medium",
+                            tags: ["Performance", "Cache"],
+                            solved: false,
+                            granted: true,
+                            attemptedAt: "2025-04-12T09:15:00Z",
+                        },
+                        {
+                            problemId: "10",
+                            title: "Implement Caching Layer",
+                            problemStatement:
+                                "Add a Redis caching layer to improve response times on frequently accessed data.",
+                            difficulty: "Medium",
+                            tags: ["Performance", "Cache"],
+                            solved: false,
+                            granted: true,
+                            attemptedAt: "2025-04-12T09:15:00Z",
+                        },
+                        {
+                            problemId: "11",
+                            title: "Implement Caching Layer",
+                            problemStatement:
                                 "Add a Redis caching layer to improve response times on frequently accessed data.",
                             difficulty: "Medium",
                             tags: ["Performance", "Cache"],
@@ -97,7 +116,7 @@ export default function Dashboard() {
                         {
                             problemId: "4",
                             title: "Implement Chat Feature",
-                            description:
+                            problemStatement:
                                 "Add a real-time chat feature using WebSockets for user communication.",
                             difficulty: "Hard",
                             tags: ["WebSockets", "Real-time"],
@@ -108,7 +127,7 @@ export default function Dashboard() {
                         {
                             problemId: "5",
                             title: "Optimize Image Compression",
-                            description:
+                            problemStatement:
                                 "Implement better image compression to reduce bandwidth usage.",
                             difficulty: "Easy",
                             tags: ["Optimization", "Media"],
@@ -260,22 +279,24 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-xl font-semibold">
-                    Loading dashboard...
+            <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, #2d3748, #1a202c)'}}>
+                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20">
+                    <div className="text-xl font-semibold text-white">
+                        Loading dashboard...
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen">
+        <div className="min-h-screen pt-[90px]" style={{background: 'linear-gradient(to bottom right, #2d3748, #1a202c)'}}>
             {/* Top Navigation */}
-            <div className="bg-white shadow-sm">
+            <div className="bg-white/10  backdrop-blur-lg border-b border-white/20">
                 <div className="container mx-auto py-4 px-4 md:px-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                            <h1 className="text-xl font-bold text-gray-800">
+                            <h1 className="text-xl font-bold text-white">
                                 DevSolve Dashboard
                             </h1>
                         </div>
@@ -284,7 +305,7 @@ export default function Dashboard() {
                             <div className="relative mr-4">
                                 <Bell
                                     size={20}
-                                    className="text-gray-600 cursor-pointer"
+                                    className="text-white/70 hover:text-white cursor-pointer transition-colors"
                                 />
                                 {notifications.filter((n) => !n.read).length >
                                     0 && (
@@ -298,12 +319,7 @@ export default function Dashboard() {
                             </div>
 
                             <div className="flex items-center">
-                                <img
-                                    src={userData.profilePic}
-                                    alt="Profile"
-                                    className="w-8 h-8 rounded-full mr-2"
-                                />
-                                <span className="font-medium text-gray-700">
+                                <span className="font-medium text-white">
                                     {userData.username}
                                 </span>
                             </div>
@@ -315,57 +331,57 @@ export default function Dashboard() {
             <div className="container mx-auto py-6 px-4 md:px-6">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-white rounded-lg shadow p-4 flex items-center">
-                        <div className="rounded-full bg-green-100 p-3 mr-4">
-                            <CheckCircle size={24} className="text-green-600" />
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg p-4 flex items-center border border-white/20">
+                        <div className="rounded-full bg-green-500/20 p-3 mr-4">
+                            <CheckCircle size={24} className="text-green-400" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-medium text-gray-500">
+                            <h3 className="text-sm font-medium text-white/70">
                                 Problems Solved
                             </h3>
-                            <p className="text-2xl text-black font-bold">
+                            <p className="text-2xl text-white font-bold">
                                 {stats.problemsSolved}
                             </p>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-4 flex items-center">
-                        <div className="rounded-full bg-yellow-100 p-3 mr-4">
-                            <Clock size={24} className="text-yellow-600" />
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg p-4 flex items-center border border-white/20">
+                        <div className="rounded-full bg-yellow-500/20 p-3 mr-4">
+                            <Clock size={24} className="text-yellow-400" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-medium text-gray-500">
+                            <h3 className="text-sm font-medium text-white/70">
                                 In Progress
                             </h3>
-                            <p className="text-2xl text-black font-bold">
+                            <p className="text-2xl text-white font-bold">
                                 {stats.problemsInProgress}
                             </p>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-4 flex items-center">
-                        <div className="rounded-full bg-blue-100 p-3 mr-4">
-                            <PlusCircle size={24} className="text-blue-600" />
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg p-4 flex items-center border border-white/20">
+                        <div className="rounded-full bg-blue-500/20 p-3 mr-4">
+                            <PlusCircle size={24} className="text-blue-400" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-medium text-gray-500">
+                            <h3 className="text-sm font-medium text-white/70">
                                 Problems Issued
                             </h3>
-                            <p className="text-2xl text-black font-bold">
+                            <p className="text-2xl text-white font-bold">
                                 {stats.problemsIssued}
                             </p>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-4 flex items-center">
-                        <div className="rounded-full bg-purple-100 p-3 mr-4">
-                            <Users size={24} className="text-purple-600" />
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg p-4 flex items-center border border-white/20">
+                        <div className="rounded-full bg-purple-500/20 p-3 mr-4">
+                            <Users size={24} className="text-purple-400" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-medium text-gray-500">
+                            <h3 className="text-sm font-medium text-white/70">
                                 Connections
                             </h3>
-                            <p className="text-2xl text-black font-bold">
+                            <p className="text-2xl text-white font-bold">
                                 {stats.connections}
                             </p>
                         </div>
@@ -373,14 +389,14 @@ export default function Dashboard() {
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="bg-white rounded-lg shadow mb-6">
-                    <div className="border-b border-gray-200">
+                <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg mb-6 border border-white/20">
+                    <div className="border-b border-white/20">
                         <nav className="flex">
                             <button
-                                className={`px-4 py-3 font-medium text-sm ${
+                                className={`px-4 py-3 font-medium text-sm transition-colors ${
                                     activeTab === "problems"
-                                        ? "text-blue-600 border-b-2 border-blue-600"
-                                        : "text-gray-500"
+                                        ? "text-blue-400 border-b-2 border-blue-400"
+                                        : "text-white/70 hover:text-white"
                                 }`}
                                 onClick={() => setActiveTab("problems")}
                             >
@@ -391,10 +407,10 @@ export default function Dashboard() {
                             </button>
 
                             <button
-                                className={`px-4 py-3 font-medium text-sm ${
+                                className={`px-4 py-3 font-medium text-sm transition-colors ${
                                     activeTab === "network"
-                                        ? "text-blue-600 border-b-2 border-blue-600"
-                                        : "text-gray-500"
+                                        ? "text-blue-400 border-b-2 border-blue-400"
+                                        : "text-white/70 hover:text-white"
                                 }`}
                                 onClick={() => setActiveTab("network")}
                             >
@@ -405,10 +421,10 @@ export default function Dashboard() {
                             </button>
 
                             <button
-                                className={`px-4 py-3 font-medium text-sm ${
+                                className={`px-4 py-3 font-medium text-sm transition-colors ${
                                     activeTab === "achievements"
-                                        ? "text-blue-600 border-b-2 border-blue-600"
-                                        : "text-gray-500"
+                                        ? "text-blue-400 border-b-2 border-blue-400"
+                                        : "text-white/70 hover:text-white"
                                 }`}
                                 onClick={() => setActiveTab("achievements")}
                             >
@@ -426,18 +442,18 @@ export default function Dashboard() {
                         {activeTab === "problems" && (
                             <div>
                                 <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-lg font-medium">
+                                    <h2 className="text-lg font-medium text-white">
                                         My Problems
                                     </h2>
                                     <div className="relative">
                                         <Search
                                             size={16}
-                                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50"
                                         />
                                         <input
                                             type="text"
                                             placeholder="Search problems..."
-                                            className="pl-10 text-black pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
                                             value={searchQuery}
                                             onChange={(e) =>
                                                 setSearchQuery(e.target.value)
@@ -446,46 +462,46 @@ export default function Dashboard() {
                                     </div>
                                 </div>
 
-                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
                                     <div className="overflow-x-auto">
-                                        <table className="min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-gray-50">
+                                        <table className="min-w-full divide-y divide-white/10">
+                                            <thead className="bg-white/5">
                                                 <tr>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
                                                         Problem
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
                                                         Difficulty
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
                                                         Tags
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
                                                         Status
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
                                                         Attempted
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="bg-white divide-y divide-gray-200">
+                                            <tbody className="divide-y divide-white/10">
                                                 {filteredProblems.map(
                                                     (problem) => (
                                                         <tr
                                                             key={
                                                                 problem.problemId
                                                             }
-                                                            className="hover:bg-gray-50"
+                                                            className="hover:bg-white/5 transition-colors"
                                                         >
                                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                                <div className="font-medium text-gray-900">
+                                                                <div className="font-medium text-white">
                                                                     {
                                                                         problem.title
                                                                     }
                                                                 </div>
-                                                                <div className="text-sm text-gray-500 truncate max-w-md">
+                                                                <div className="text-sm text-white/70 truncate max-w-md">
                                                                     {
-                                                                        problem.description
+                                                                        problem.problemStatement
                                                                     }
                                                                 </div>
                                                             </td>
@@ -494,11 +510,11 @@ export default function Dashboard() {
                                                                     className={`px-2 py-1 text-xs rounded-full ${
                                                                         problem.difficulty ===
                                                                         "Easy"
-                                                                            ? "bg-green-100 text-green-800"
+                                                                            ? "bg-green-500/20 text-green-400"
                                                                             : problem.difficulty ===
                                                                               "Medium"
-                                                                            ? "bg-yellow-100 text-yellow-800"
-                                                                            : "bg-red-100 text-red-800"
+                                                                            ? "bg-yellow-500/20 text-yellow-400"
+                                                                            : "bg-red-500/20 text-red-400"
                                                                     }`}
                                                                 >
                                                                     {
@@ -517,7 +533,7 @@ export default function Dashboard() {
                                                                                 key={
                                                                                     idx
                                                                                 }
-                                                                                className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
+                                                                                className="bg-white/10 text-white/80 px-2 py-1 rounded text-xs"
                                                                             >
                                                                                 {
                                                                                     tag
@@ -531,8 +547,8 @@ export default function Dashboard() {
                                                                 <span
                                                                     className={`px-2 py-1 text-xs rounded-full ${
                                                                         problem.solved
-                                                                            ? "bg-green-100 text-green-800"
-                                                                            : "bg-yellow-100 text-yellow-800"
+                                                                            ? "bg-green-500/20 text-green-400"
+                                                                            : "bg-yellow-500/20 text-yellow-400"
                                                                     }`}
                                                                 >
                                                                     {problem.solved
@@ -540,7 +556,7 @@ export default function Dashboard() {
                                                                         : "In Progress"}
                                                                 </span>
                                                             </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
                                                                 {formatRelativeTime(
                                                                     problem.attemptedAt
                                                                 )}
@@ -554,7 +570,7 @@ export default function Dashboard() {
 
                                     {filteredProblems.length === 0 && (
                                         <div className="text-center py-6">
-                                            <p className="text-gray-500">
+                                            <p className="text-white/70">
                                                 No problems found matching your
                                                 criteria
                                             </p>
@@ -567,38 +583,33 @@ export default function Dashboard() {
                         {/* Network Tab */}
                         {activeTab === "network" && (
                             <div>
-                                <h2 className="text-lg font-medium mb-4">
+                                <h2 className="text-lg font-medium text-white mb-4">
                                     My Network
                                 </h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {userData.contact.map((contact) => (
                                         <div
                                             key={contact.id}
-                                            className="bg-white border border-gray-200 rounded-lg p-4 flex items-center"
+                                            className="bg-white/10 border border-white/20 rounded-xl p-4 flex items-center backdrop-blur-lg"
                                         >
-                                            <img
-                                                src={contact.profilePic}
-                                                alt={contact.username}
-                                                className="w-12 h-12 rounded-full mr-4"
-                                            />
                                             <div>
-                                                <h3 className="font-medium text-gray-900">
+                                                <h3 className="font-medium text-white">
                                                     {contact.username}
                                                 </h3>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-white/70">
                                                     {contact.email}
                                                 </p>
                                             </div>
                                         </div>
                                     ))}
 
-                                    <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center cursor-pointer hover:bg-gray-100">
+                                    <div className="bg-white/5 border border-dashed border-white/30 rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
                                         <div className="text-center">
                                             <PlusCircle
                                                 size={24}
-                                                className="mx-auto mb-2 text-gray-400"
+                                                className="mx-auto mb-2 text-white/50"
                                             />
-                                            <p className="text-sm font-medium text-gray-500">
+                                            <p className="text-sm font-medium text-white/70">
                                                 Find More Connections
                                             </p>
                                         </div>
@@ -610,7 +621,7 @@ export default function Dashboard() {
                         {/* Achievements Tab */}
                         {activeTab === "achievements" && (
                             <div>
-                                <h2 className="text-lg font-medium mb-4">
+                                <h2 className="text-lg text-white font-medium mb-4">
                                     My Achievements
                                 </h2>
                                 <div className="space-y-4">
@@ -618,37 +629,37 @@ export default function Dashboard() {
                                         (achievement, index) => (
                                             <div
                                                 key={index}
-                                                className="bg-white border border-gray-200 rounded-lg p-4"
+                                                className="bg-white/10 border border-white/20 rounded-xl p-4 backdrop-blur-lg"
                                             >
                                                 <div className="flex items-center">
                                                     <div
                                                         className={`rounded-full p-3 mr-4 ${
                                                             achievement.earned
-                                                                ? "bg-yellow-100"
-                                                                : "bg-gray-100"
+                                                                ? "bg-yellow-500/20"
+                                                                : "bg-white/10"
                                                         }`}
                                                     >
                                                         <Award
                                                             size={24}
                                                             className={
                                                                 achievement.earned
-                                                                    ? "text-yellow-600"
-                                                                    : "text-gray-400"
+                                                                    ? "text-yellow-400"
+                                                                    : "text-white/50"
                                                             }
                                                         />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <h3 className="font-medium text-gray-900">
+                                                        <h3 className="font-medium text-white">
                                                             {achievement.name}
                                                         </h3>
-                                                        <p className="text-sm text-gray-500">
+                                                        <p className="text-sm text-white/70">
                                                             {
                                                                 achievement.description
                                                             }
                                                         </p>
 
                                                         {achievement.earned ? (
-                                                            <p className="text-xs text-green-600 mt-1">
+                                                            <p className="text-xs text-green-400 mt-1">
                                                                 Earned on{" "}
                                                                 {new Date(
                                                                     achievement.date
@@ -656,9 +667,9 @@ export default function Dashboard() {
                                                             </p>
                                                         ) : (
                                                             <div className="mt-2">
-                                                                <div className="bg-gray-200 rounded-full h-2 w-full">
+                                                                <div className="bg-white/20 rounded-full h-2 w-full">
                                                                     <div
-                                                                        className="bg-blue-600 h-2 rounded-full"
+                                                                        className="bg-blue-400 h-2 rounded-full"
                                                                         style={{
                                                                             width: `${
                                                                                 (achievement.progress /
@@ -668,7 +679,7 @@ export default function Dashboard() {
                                                                         }}
                                                                     ></div>
                                                                 </div>
-                                                                <p className="text-xs text-gray-500 mt-1">
+                                                                <p className="text-xs text-white/70 mt-1">
                                                                     {
                                                                         achievement.progress
                                                                     }

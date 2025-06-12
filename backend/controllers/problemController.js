@@ -106,7 +106,7 @@ const addMultipleProblems = async (req, res) => {
 const getAllProblems = async (req, res) => {
     try {
         const problems = await Problem.find()
-            .populate("issuedBy", "username email") // optional: populate user info
+            .populate("issuedBy", "username email profilePic") // optional: populate user info
             .sort({ createdAt: -1 }); // latest first
 
         res.status(200).json({
@@ -360,8 +360,6 @@ const rejectRequest = async (req, res) => {
             (p) => p.solverId.toString() === attempterId.toString()
         );
 
-        console.log(rejectedRequest);
-
         if (!rejectedRequest) {
             return res.status(404).json({
                 success: false,
@@ -370,7 +368,7 @@ const rejectRequest = async (req, res) => {
         }
 
         // Move it to accessRejected
-        problem.accessRejected.push(rejectedRequest);
+        problem.accessRejected.push({solverId : rejectedRequest.solverId , proposedSolution: rejectedRequest.proposedSolution});
 
         // Remove from accessPending
         problem.accessPending = problem.accessPending.filter(

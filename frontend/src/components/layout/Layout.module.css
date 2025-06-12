@@ -1,16 +1,19 @@
 .backgroundImage {
-    background-image: linear-gradient(to bottom right, #f7fafc, #d1d5db);
+    /* background-image: linear-gradient(to bottom right, #f7fafc, #d1d5db); */
     background-attachment: fixed; 
     background-size: cover; 
     background-position: center; 
     width: 100%; 
     min-height: 100vh; /* Allow the container to grow with content */
+    display: flex;
+    flex-direction: column;
     
     /* REMOVE these fixed positioning properties: */
     /* position: fixed; */
     /* top: 0; */
     /* left: 0; */
     /* z-index: -1; */
+    /* padding-top: 80px; */
     
     /* REPLACE with: */
     position: relative; /* or just remove position entirely */
@@ -19,9 +22,9 @@
 
 .layoutmainBody{
     position: relative;
-    top: 112px; /* Keep this for navbar offset */
+    /* top: 80px; Keep this for navbar offset */
     min-height: auto;
-    padding-bottom: 40px; /* Add some bottom padding */
+    /* padding-bottom: 40px; Add some bottom padding */
     
     /* Add these for better scrolling: */
     width: 100%;

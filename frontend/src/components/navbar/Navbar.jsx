@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import StyledButton from "../StyledButton/StyledButton";
-import { logoutAsync } from "../../store/authSlice";
-import logoImg from "../../assets/blacklogo.png";
-import NavLink from "../navlink/NavLink";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
+import { useSelector } from "react-redux";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import logoImg from "../../assets/blacklogo.png";
+import { useLocation } from "react-router-dom";
+import { Code } from "lucide-react";
 
 const Navbar = ({ transparent }) => {
+    const Location = useLocation();
+    const isLoginPage = Location.pathname === "/login";
+    const isSignupPage = Location.pathname === "/signup";
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const { user, isLoggedIn } = useSelector((store) => store.authProvider);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResult, setSearchResult] = useState([]);
 
     const loginRedirect = () => navigate("/login");
     const signupRedirect = () => navigate("/signup");
@@ -22,132 +26,348 @@ const Navbar = ({ transparent }) => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
         };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            if (searchQuery.trim() !== "") {
+                handleSearchUser(searchQuery);
+            } else {
+                setSearchResult([]);
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchQuery]);
+
+    const handleSearchUser = (query) => {
+        axios
+            .post(
+                `${import.meta.env.VITE_API_BASE_URL}/api/user/searchUsers`,
+                { searchQuery: query },
+                { withCredentials: true }
+            )
+            .then((response) => {
+                setSearchResult(response.data.users);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
+    };
 
     return (
         <>
             <nav
                 className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${
-                    isScrolled 
-                        ? 'h-16 bg-white/95 backdrop-blur-xl shadow-2xl border-b border-gray-200/50' 
-                        : 'h-20 bg-gradient-to-r from-white/10 via-white/5 to-white/10 backdrop-blur-md'
+                    isScrolled
+                        ? "bg-gray-900/95 backdrop-blur-xl border-b border-gray-800/50 shadow-2xl"
+                        : "bg-transparent"
                 }`}
             >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-                    <div className="flex items-center justify-between h-full">
+                {/* Background gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 via-gray-900/50 to-blue-900/10 backdrop-blur-sm"></div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-16 lg:h-20">
                         {/* Logo Section */}
                         <div className="flex items-center space-x-4">
                             <div
-                                className={`relative cursor-pointer group transition-all duration-500 ${
-                                    isScrolled ? 'w-12 h-12' : 'w-16 h-16'
-                                }`}
+                                className="relative cursor-pointer group transition-all duration-500 hover:scale-110"
                                 onClick={() => navigate("/dashboard")}
                             >
-                                <div 
-                                    className="w-full h-full bg-contain bg-center bg-no-repeat transition-all duration-500 group-hover:scale-110 group-hover:rotate-12"
-                                    style={{ backgroundImage: `url(${logoImg})` }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                        <Code className="text-white w-6 h-6" />
+                                    </div>
+                                    <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                                        Synergy Solver
+                                    </span>
+                                </div>
+                                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-hover:opacity-20 blur-lg transition-all duration-300"></div>
                             </div>
                         </div>
 
                         {/* Desktop Navigation Links */}
                         <div className="hidden lg:flex items-center space-x-1">
+                            <NavLinkStyled text="Home" navigateTo="" />
                             {isLoggedIn && (
-                                <NavLinkStyled text="Dashboard" navigateTo="dashboard" />
+                                <NavLinkStyled
+                                    text="Dashboard"
+                                    navigateTo="dashboard"
+                                />
                             )}
                             {isLoggedIn && (
-                                <NavLinkStyled text="Discussion" navigateTo="chatpage" />
+                                <NavLinkStyled
+                                    text="Discussion"
+                                    navigateTo="chatpage"
+                                />
                             )}
-                            <NavLinkStyled text="About Us" navigateTo="aboutus" />
-                            <NavLinkStyled text="Problems" navigateTo="problems" />
-                            <NavLinkStyled text="Rankings" navigateTo="rankings" />
-                            <NavLinkStyled text="Contact" navigateTo="contactus" />
+                            <NavLinkStyled
+                                text="Problems"
+                                navigateTo="problems"
+                            />
+                            <NavLinkStyled
+                                text="Rankings"
+                                navigateTo="rankings"
+                            />
+                            <NavLinkStyled
+                                text="Contact"
+                                navigateTo="contactus"
+                            />
                         </div>
 
                         {/* Auth Section */}
                         <div className="hidden lg:flex items-center space-x-4">
                             {!isLoggedIn ? (
                                 <div className="flex items-center space-x-3">
-                                    <button
-                                        onClick={loginRedirect}
-                                        className="px-6 py-2 text-gray-700 hover:text-blue-600 font-medium transition-all duration-300 relative group"
-                                    >
-                                        Login
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
-                                    </button>
-                                    <button
-                                        onClick={signupRedirect}
-                                        className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 relative overflow-hidden group"
-                                    >
-                                        <span className="relative z-10">Sign Up</span>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                    </button>
+                                    {isLoginPage ? (
+                                        <div className="px-6 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium shadow-lg">
+                                            Login
+                                        </div>
+                                    ) : (
+                                        <NavLinkStyled
+                                            text="Login"
+                                            navigateTo="login"
+                                        />
+                                    )}
+
+                                    {isSignupPage ? (
+                                        <div className="px-6 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium shadow-lg">
+                                            Register
+                                        </div>
+                                    ) : (
+                                        <NavLinkStyled
+                                            text={"Register"}
+                                            navigateTo={"signup"}
+                                        />
+                                    )}
                                 </div>
                             ) : (
-                                <Link
-                                    to={`/profile/${user._id}`}
-                                    className="relative group"
-                                >
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-0.5 group-hover:scale-110 transition-all duration-300">
-                                        <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                                            <CgProfile size={24} className="text-gray-700 group-hover:text-blue-600 transition-colors duration-300" />
+                                <>
+                                    {/* Search Bar */}
+                                    <div className="relative">
+                                        <div className="flex-col items-center relative">
+                                            <input
+                                                type="text"
+                                                placeholder="Search Users..."
+                                                value={searchQuery}
+                                                onBlur={() =>
+                                                    setTimeout(
+                                                        () =>
+                                                            setSearchQuery(""),
+                                                        200
+                                                    )
+                                                }
+                                                onChange={(e) =>
+                                                    setSearchQuery(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="w-64 pl-4 pr-4 py-2.5 bg-gray-800/80 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
+                                            />
+                                            {searchResult.length > 0 && (
+                                                <div className="absolute z-50 bg-gray-800/95 backdrop-blur-xl border border-gray-700 shadow-2xl rounded-xl mt-2 w-full max-h-60 overflow-y-auto">
+                                                    <ul className="divide-y divide-gray-700">
+                                                        {searchResult.map(
+                                                            (user) => (
+                                                                <li
+                                                                    key={
+                                                                        user._id
+                                                                    }
+                                                                    onClick={() =>
+                                                                        setSearchQuery(
+                                                                            ""
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <Link
+                                                                        to={`/profile/${user._id}`}
+                                                                        className="flex items-center p-4 hover:bg-gray-700/50 transition-colors duration-200"
+                                                                    >
+                                                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 p-0.5">
+                                                                            <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
+                                                                                <CgProfile
+                                                                                    size={
+                                                                                        20
+                                                                                    }
+                                                                                    className="text-gray-300"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="ml-3 font-medium text-white">
+                                                                            {
+                                                                                user.username
+                                                                            }
+                                                                        </span>
+                                                                    </Link>
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="absolute -inset-1 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full opacity-0 group-hover:opacity-20 blur-md transition-all duration-300"></div>
-                                </Link>
+
+                                    {/* Profile Button */}
+                                    <Link
+                                        to={`/profile/${user._id}`}
+                                        className="relative group"
+                                    >
+                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 p-0.5 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-purple-500/50">
+                                            <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center overflow-hidden">
+                                                {user.profilePic ? (
+                                                    <img
+                                                        src={user.profilePic}
+                                                        alt="User profile"
+                                                        className="w-full h-full object-cover rounded-full"
+                                                    />
+                                                ) : (
+                                                    <CgProfile
+                                                        className="text-gray-300 group-hover:text-white"
+                                                        size={24}
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="absolute -inset-1 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full opacity-0 group-hover:opacity-30 blur-md transition-all duration-300"></div>
+                                    </Link>
+                                </>
                             )}
                         </div>
 
                         {/* Mobile Menu Button */}
                         <button
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="lg:hidden p-2 rounded-lg hover:bg-gray-100/80 transition-colors duration-200"
+                            onClick={() =>
+                                setIsMobileMenuOpen(!isMobileMenuOpen)
+                            }
+                            className="lg:hidden p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 transition-all duration-200"
                         >
                             {isMobileMenuOpen ? (
-                                <HiX size={24} className="text-gray-700" />
+                                <HiX size={24} className="text-white" />
                             ) : (
-                                <HiMenuAlt3 size={24} className="text-gray-700" />
+                                <HiMenuAlt3 size={24} className="text-white" />
                             )}
                         </button>
                     </div>
                 </div>
-
-                {/* Animated border */}
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent opacity-30"></div>
             </nav>
 
             {/* Mobile Menu Overlay */}
             <div
                 className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${
-                    isMobileMenuOpen 
-                        ? 'opacity-100 visible' 
-                        : 'opacity-0 invisible'
+                    isMobileMenuOpen
+                        ? "opacity-100 visible"
+                        : "opacity-0 invisible"
                 }`}
             >
-                <div 
-                    className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+                <div
+                    className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                     onClick={() => setIsMobileMenuOpen(false)}
                 ></div>
-                
-                <div className={`absolute top-20 left-4 right-4 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 overflow-hidden transition-all duration-500 ${
-                    isMobileMenuOpen ? 'translate-y-0 scale-100' : '-translate-y-4 scale-95'
-                }`}>
+
+                <div
+                    className={`absolute top-20 left-4 right-4 bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 overflow-hidden transition-all duration-500 ${
+                        isMobileMenuOpen
+                            ? "translate-y-0 scale-100"
+                            : "-translate-y-4 scale-95"
+                    }`}
+                >
                     <div className="p-6 space-y-4">
+                        {/* Search Bar for Mobile */}
                         {isLoggedIn && (
-                            <MobileNavLink text="Dashboard" navigateTo="dashboard" onClick={() => setIsMobileMenuOpen(false)} />
+                            <div className="relative mb-6">
+                                <input
+                                    type="text"
+                                    placeholder="Search Users..."
+                                    value={searchQuery}
+                                    onBlur={() =>
+                                        setTimeout(
+                                            () => setSearchQuery(""),
+                                            200
+                                        )
+                                    }
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
+                                    className="w-full pl-4 pr-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                                />
+                                {searchResult.length > 0 && (
+                                    <div className="absolute z-50 bg-gray-700/95 backdrop-blur-xl border border-gray-600 shadow-2xl rounded-xl mt-2 w-full max-h-48 overflow-y-auto">
+                                        <ul className="divide-y divide-gray-600">
+                                            {searchResult.map((user) => (
+                                                <li
+                                                    key={user._id}
+                                                    onClick={() => {
+                                                        setSearchQuery("");
+                                                        setIsMobileMenuOpen(
+                                                            false
+                                                        );
+                                                    }}
+                                                >
+                                                    <Link
+                                                        to={`/profile/${user._id}`}
+                                                        className="flex items-center p-3 hover:bg-gray-600/50 transition-colors duration-200"
+                                                    >
+                                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 p-0.5">
+                                                            <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
+                                                                <CgProfile
+                                                                    size={16}
+                                                                    className="text-gray-300"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <span className="ml-3 font-medium text-white text-sm">
+                                                            {user.username}
+                                                        </span>
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <MobileNavLink
+                            text="Home"
+                            navigateTo=""
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        />
+                        {isLoggedIn && (
+                            <MobileNavLink
+                                text="Dashboard"
+                                navigateTo="dashboard"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            />
                         )}
                         {isLoggedIn && (
-                            <MobileNavLink text="Discussion" navigateTo="chatpage" onClick={() => setIsMobileMenuOpen(false)} />
+                            <MobileNavLink
+                                text="Discussion"
+                                navigateTo="chatpage"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            />
                         )}
-                        <MobileNavLink text="About Us" navigateTo="aboutus" onClick={() => setIsMobileMenuOpen(false)} />
-                        <MobileNavLink text="Problems" navigateTo="problems" onClick={() => setIsMobileMenuOpen(false)} />
-                        <MobileNavLink text="Rankings" navigateTo="rankings" onClick={() => setIsMobileMenuOpen(false)} />
-                        <MobileNavLink text="Contact" navigateTo="contactus" onClick={() => setIsMobileMenuOpen(false)} />
-                        
-                        <div className="pt-4 border-t border-gray-200">
+                        <MobileNavLink
+                            text="Problems"
+                            navigateTo="problems"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        />
+                        <MobileNavLink
+                            text="Rankings"
+                            navigateTo="rankings"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        />
+                        <MobileNavLink
+                            text="Contact"
+                            navigateTo="contactus"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        />
+                        <div className="pt-6 border-t border-gray-700">
                             {!isLoggedIn ? (
                                 <div className="space-y-3">
                                     <button
@@ -155,7 +375,7 @@ const Navbar = ({ transparent }) => {
                                             loginRedirect();
                                             setIsMobileMenuOpen(false);
                                         }}
-                                        className="w-full px-6 py-3 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-all duration-300"
+                                        className="w-full px-6 py-3 text-white hover:bg-gray-700/50 rounded-xl font-medium transition-all duration-300 border border-gray-600"
                                     >
                                         Login
                                     </button>
@@ -164,23 +384,28 @@ const Navbar = ({ transparent }) => {
                                             signupRedirect();
                                             setIsMobileMenuOpen(false);
                                         }}
-                                        className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                                        className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:from-purple-700 hover:to-blue-700"
                                     >
-                                        Sign Up
+                                        Register
                                     </button>
                                 </div>
                             ) : (
                                 <Link
                                     to={`/profile/${user._id}`}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200"
+                                    className="flex items-center space-x-3 p-4 rounded-xl hover:bg-gray-700/50 transition-colors duration-200 border border-gray-700"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-0.5">
-                                        <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                                            <CgProfile size={20} className="text-gray-700" />
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 p-0.5">
+                                        <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
+                                            <CgProfile
+                                                size={20}
+                                                className="text-gray-300"
+                                            />
                                         </div>
                                     </div>
-                                    <span className="font-medium text-gray-700">Profile</span>
+                                    <span className="font-medium text-white">
+                                        View Profile
+                                    </span>
                                 </Link>
                             )}
                         </div>
@@ -194,14 +419,15 @@ const Navbar = ({ transparent }) => {
 // Enhanced NavLink Component for Desktop
 const NavLinkStyled = ({ text, navigateTo }) => {
     const navigate = useNavigate();
-    
+
     return (
         <button
             onClick={() => navigate(`/${navigateTo}`)}
-            className="relative px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-all duration-300 group rounded-lg hover:bg-gray-50/50"
+            className="relative px-4 py-2 text-gray-300 hover:text-white font-medium transition-all duration-300 group rounded-lg"
         >
             {text}
-            <span className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-3/4 transition-all duration-300 rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 group-hover:w-3/4 transition-all duration-300 rounded-full"></span>
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </button>
     );
 };
@@ -209,14 +435,14 @@ const NavLinkStyled = ({ text, navigateTo }) => {
 // Mobile NavLink Component
 const MobileNavLink = ({ text, navigateTo, onClick }) => {
     const navigate = useNavigate();
-    
+
     return (
         <button
             onClick={() => {
                 navigate(`/${navigateTo}`);
                 onClick();
             }}
-            className="w-full text-left px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-xl font-medium transition-all duration-300"
+            className="w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700/30 rounded-xl font-medium transition-all duration-300 border border-transparent hover:border-gray-600"
         >
             {text}
         </button>

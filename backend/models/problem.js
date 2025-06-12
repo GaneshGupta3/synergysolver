@@ -3,6 +3,11 @@ const User = require("./user");
 
 const ProblemSchema = new mongoose.Schema(
     {
+        title: {
+            type: String,
+            required: false, // Ensures every problem has a title
+            trim: true, // Removes leading/trailing spaces
+        },
         problemStatement: {
             type: String,
             required: true,
@@ -70,10 +75,10 @@ const ProblemSchema = new mongoose.Schema(
                     ref: "User",
                     required: true,
                 },
-                proposedSolution:{
+                proposedSolution: {
                     type: String,
                     required: false,
-                }
+                },
             },
         ],
         tags: {
@@ -100,7 +105,6 @@ const ProblemSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
-        
         deadline: {
             type: Date,
             default: null, // Ensures the problem has a deadline
@@ -109,6 +113,11 @@ const ProblemSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
             index: true, // Optimizes queries for solved problems
+        },
+        solveBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
         },
         issuedAt: {
             type: Date,

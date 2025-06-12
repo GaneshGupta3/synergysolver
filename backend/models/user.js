@@ -21,6 +21,9 @@ const UserSchema = new mongoose.Schema(
             type: String,
             // required: true,
         },
+        skills: {
+            type: [String],
+        },
         savedProblems: [
             {
                 problemId: {
@@ -55,21 +58,6 @@ const UserSchema = new mongoose.Schema(
                 },
             },
         ],
-        skills: {
-            type: [String],
-        },
-        pastProjects: [
-            {
-                type: {
-                    title: {type : String , required: true},
-                    description: {type : String , required: true},
-                    link: {type : String , required: true},
-                },
-            },
-        ],
-        achievements: {
-            type: [String],
-        },
         issuedProblems: [
             {
                 problemId: {
@@ -86,6 +74,25 @@ const UserSchema = new mongoose.Schema(
                 },
             },
         ],
+        
+        pastProjects: [
+            {
+                type: {
+                    title: {type : String , required: true},
+                    description: {type : String , required: true},
+                    link: {type : String , required: true},
+                },
+            },
+        ],
+        achievements:[
+            {
+                name: { type: String, required: true },
+                description: { type: String, required: true },
+                earned: {type : Boolean , default: false},
+                date : { type: Date, default: Date.now },
+            }
+        ],
+        
         contact: [
             {
                 type: mongoose.Schema.Types.ObjectId,

@@ -15,12 +15,10 @@ const authSlice = createSlice({
         login: (state, action) => {
             state.user = action.payload;
             state.isLoggedIn = true;
-            localStorage.setItem("user", JSON.stringify(action.payload)); // Persist login
         },
         logout: (state) => {
             state.user = null;
             state.isLoggedIn = false;
-            localStorage.removeItem("user"); // Also clear from storage
         },
         signUpButtonClicked: (state) => {
             state.isSigningUp = true;
@@ -30,7 +28,7 @@ const authSlice = createSlice({
 
 export const logoutAsync = () => async (dispatch) => {
     try {
-        console.log("login out");
+        console.log("logout");
         await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`, {}, { withCredentials: true }); // Ensure cookies are sent
         dispatch(authSlice.actions.logout()); // Dispatch sync logout action
     } catch (error) {

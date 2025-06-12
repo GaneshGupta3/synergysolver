@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const { default: Message } = require("../models/message");
 const User = require("../models/user");
 const cloudinary = require("../services/cloudinary");
@@ -31,15 +32,16 @@ const updateProfileController = async (req, res) => {
     }
 };
 
-const checkAuthController = (req, res) => {
+const checkAuthController = async(req, res) => {
     try {
-        res.status(200).json(req.user);
+         const userId = req.user._id;
+        const user = await User.findById(userId).select("-password").populate("solvingProblems.problemId").populate("issuedProblems.problemId");
+        return res.status(200).json(user);
     } catch (error) {
         console.log("error in check auth controller");
         res.status(500).json({ message: "Internal server error" });
     }
 };
-
 const getUser = async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -62,10 +64,10 @@ const getUser = async (req, res) => {
 
         if (realUserId.toString() !== userId.toString()) {
             const realUser = await User.findById(realUserId);
-            return res.status(200).json({ realUser: realUser, data: user });
+            return res.status(200).json(user );
         }
 
-        return res.status(200).json({ data: user });
+        return res.status(200).json( user );
     } catch (error) {
         console.log("error in get user controller:", error.message);
         res.status(500).json({ message: "Internal server error" });
@@ -106,10 +108,38 @@ const editPastProjects = async (req, res) => {
     }
 };
 
+const searchUsers = async ( req , res ) =>{
+    try {
+        const { searchQuery } = req.body;
+        const users = await User.find({username : {$regex: searchQuery , $options: "i"}} , "username _id ");
+        res.status(200).json({ users: users });
+    }
+    catch (error) {
+        console.log("error in get all usernames controller:", error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+const uploadProfilePic = async (req, res) =>{
+    const user = req.user;
+    const { profilePicURL }  = req.body;
+    if(!profilePicURL) {
+        return res.status(400).json({ message: "Profile picture is required" });
+    }
+    if(!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    user.profilePic = profilePicURL;
+    savedUser = await user.save();
+    res.status(200).json( {savedUser} );
+}
+
 module.exports = {
     updateProfileController,
     checkAuthController,
     getUser,
     editSkills,
     editPastProjects,
+    searchUsers,
+    uploadProfilePic
 };

@@ -8,6 +8,7 @@ import {
     Code,
     Users,
 } from "lucide-react";
+import { FaCamera } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { authSliceActions, logoutAsync } from "../store/authSlice";
@@ -28,6 +29,7 @@ export default function ProfileDetails() {
     const url = useRef(null);
     const achievements = useRef(null);
     const inputProjectLink = useRef(null);
+    const [dummyLink , setDummyLink] = useState("")
     const [expandedSections, setExpandedSections] = useState({
         skills: true,
         projects: false,
@@ -39,34 +41,34 @@ export default function ProfileDetails() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Mock data fetching - in a real app, you'd fetch from your API
-        const fetchUser = async () => {
-            try {
-                // Replace with actual API call
-                const response = await axios.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/api/user/${userId}`,
-                    {
-                        withCredentials: true,
-                    }
-                );
-                if (response.data.realUser) {
-                    dispatch(authSliceActions.login(response.data.realUser));
-                    setUser(response.data.data);
-                } else {
-                    const userData = response.data.data;
-                    console.log(response.data.data);
-                    dispatch(authSliceActions.login(userData));
+        const fetchUserData = async () => {
+            if (sliceUser._id.toString() !== userId) {
+                try {
+                    const response = await axios.get(
+                        `${
+                            import.meta.env.VITE_API_BASE_URL
+                        }/api/user/${userId}`,
+                        {
+                            withCredentials: true,
+                        }
+                    );
+                    const userData = response.data;
+                    console.log("Fetched user data:", userData);
+                    console.log(userData);
                     setUser(userData);
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            } finally {
-                setLoading(false);
+            } else {
+                setUser(sliceUser);
+                setLoading(false); // <- Don't forget to stop loading in this case too
             }
         };
 
-        fetchUser();
-    }, [userId]);
+        fetchUserData();
+    }, [sliceUser, userId]);
 
     const handleLogout = async () => {
         dispatch(logoutAsync()); // Calls API & updates Redux state
@@ -74,7 +76,7 @@ export default function ProfileDetails() {
     };
 
     const handleEditSkills = async () => {
-        const skills = user.skills;
+        const skills = sliceUser.skills;
         try {
             if (skills === sliceUser.skills) {
                 console.log("No changes made to skills.");
@@ -192,7 +194,13 @@ export default function ProfileDetails() {
     // Use mock data for demonstration
 
     return (
-        <div className="bg-gray-50 text-black min-h-screen">
+        <div
+            className="text-black min-h-screen pt-[90px]"
+            style={{
+                background:
+                    "linear-gradient(to bottom right, #2d3748, #1a202c)",
+            }}
+        >
             {showProjectForm && (
                 <div className="fixed inset-0 z-10 w-screen h-screen flex items-center justify-center">
                     {/* Background overlay with improved blur */}
@@ -291,13 +299,82 @@ export default function ProfileDetails() {
                     {/* Profile Header */}
                     <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 md:p-8 text-white">
                         <div className="flex flex-col md:flex-row items-center">
-                            <div className="mb-4 md:mb-0 md:mr-6">
+                            <div className="relative group">
                                 <img
                                     src={user.profilePic}
                                     alt={`${user.username}'s profile`}
-                                    className="w-24 h-24 rounded-full border-4 border-white object-cover"
+                                    className="w-24 h-24 rounded-full border-4 border-white object-cover shadow-md transition duration-300 ease-in-out group-hover:opacity-80"
                                 />
+
+                                {user._id.toString() ===
+                                    sliceUser._id.toString() && (
+                                    <label className="absolute bottom-1 right-1 bg-white p-1.5 rounded-full shadow-sm hover:bg-gray-200 transition cursor-pointer">
+                                        <FaCamera className="text-gray-600 w-4 h-4" />
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            capture="environment" // or "user" for front cam
+                                            className="hidden"
+                                            onChange={async (e) => {
+                                                setLoading(true);
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    const data = new FormData();
+                                                    data.append("file", file);
+                                                    data.append(
+                                                        "upload_preset",
+                                                        `${import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET}`
+                                                    );
+                                                    data.append(
+                                                        "cloud_name",
+                                                        `${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}`
+                                                    );
+                                                    const res =
+                                                        await axios.post(
+                                                            `${import.meta.env.VITE_CLOUDINARY_IMAGE_UPLOAD_URL}`,
+                                                            data
+                                                        );
+                                                    const uploadedImageUrl = res.data.url;
+                                                    setDummyLink(uploadedImageUrl);
+                                                    console.log(uploadedImageUrl);
+                                                    if(uploadedImageUrl) {
+                                                        try {
+                                                            const response =
+                                                                await axios.post(
+                                                                    `${
+                                                                        import.meta.env.VITE_API_BASE_URL
+                                                                    }/api/user/uploadProfilePic`,
+                                                                    {
+                                                                        profilePicURL: uploadedImageUrl,
+                                                                    },
+                                                                    {
+                                                                        withCredentials: true,
+                                                                    }
+                                                                );
+                                                            console.log(
+                                                                "Profile picture updated successfully:",
+                                                                response.data.savedUser
+                                                            );
+                                                            dispatch(
+                                                                authSliceActions.login(
+                                                                    response.data.savedUser
+                                                                )
+                                                            );
+                                                        } catch (error) {
+                                                            console.error(
+                                                                "Error updating profile picture:",
+                                                                error
+                                                            );
+                                                        }
+                                                    }
+                                                }
+                                                setLoading(false);
+                                            }}
+                                        />
+                                    </label>
+                                )}
                             </div>
+
                             <div className="text-center md:text-left">
                                 <h1 className="text-2xl md:text-3xl font-bold">
                                     {user.username}
@@ -307,12 +384,16 @@ export default function ProfileDetails() {
                                     <span>{user.email}</span>
                                 </div>
                             </div>
-                            <div
-                                style={{ cursor: "pointer" }}
-                                onClick={handleLogout}
-                            >
-                                <LogoutButton />
-                            </div>
+                            {user &&
+                                user._id.toString() ===
+                                    sliceUser._id.toString() && (
+                                    <div
+                                        style={{ cursor: "pointer" }}
+                                        onClick={handleLogout}
+                                    >
+                                        <LogoutButton />
+                                    </div>
+                                )}
                         </div>
                     </div>
 
@@ -630,9 +711,11 @@ export default function ProfileDetails() {
                                                         className="border  border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                                                     >
                                                         <div className="flex items-center justify-between">
-                                                            <h4 className="font-medium">
+                                                            <h4 className="font-medium text-black">
                                                                 {
-                                                                    problem.problemStatement
+                                                                    problem
+                                                                        .problemId
+                                                                        .problemStatement
                                                                 }
                                                             </h4>
                                                             <span
