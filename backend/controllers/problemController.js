@@ -167,7 +167,8 @@ const getSpecificProblem = async (req, res) => {
         const problem = await Problem.findById(problemId)
             .populate("issuedBy", "username , email")
             .populate("accessPending.solverId", "username email _id skills")
-            .populate("attempters.userId", "username email _id");
+            .populate("attempters.userId", "username email _id")
+            .populate("solutions.solverId", "username email _id");
         return res.status(200).json({
             success: true,
             data: { problem: problem, user: req.user },
@@ -428,6 +429,7 @@ const submitSolution = async (req,res) => {
         await savedProblem.populate("issuedBy", "username email _id");
         await savedProblem.populate("accessPending.solverId", "username email _id");
         await savedProblem.populate("attempters.userId", "username email _id");
+        await savedProblem.populate("solutions.solverId", "username email _id");
         const user = await findUserWithValidation(userId , res);
         
         const userSolution = {

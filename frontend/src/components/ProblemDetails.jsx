@@ -11,6 +11,7 @@ import ProblemActions from "./ProblemActions";
 import ProblemDescription from "./ProblemDescription";
 import ProblemHeader from "./ProblemHeader";
 import RequestCards from "./RequestCards";
+import ViewSolution from "./ViewSolution";
 
 // Problem Display Component
 export default function ProblemDetails() {
@@ -27,6 +28,7 @@ export default function ProblemDetails() {
         accessPending: false,
         requestAccess: false,
         submitSolution: false,
+        viewSolutions: false,
     });
     const [loading, setLoading] = useState(true);
 
@@ -351,7 +353,7 @@ export default function ProblemDetails() {
                                                 }
                                             ></Attempters>
                                         </div>
-                                )}
+                                    )}
 
                                 {/* Access Pending */}
                                 {problem.accessPending &&
@@ -454,9 +456,9 @@ export default function ProblemDetails() {
                                                 </div>
                                             )}
                                         </div>
-                                )}
+                                    )}
 
-                                
+                                <ViewSolution problem={problem} />
                             </div>
 
                             {/* Problem Actions */}

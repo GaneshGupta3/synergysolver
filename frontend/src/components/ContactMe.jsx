@@ -116,10 +116,10 @@ export default function ContactMe() {
                         <GraduationCap className="w-6 h-6" />
                         <span>Final Year B.Tech IT Student</span>
                     </div>
-                    <p className="text-lg text-blue-300 font-medium">
+                    <a href="http://vesit.ves.ac.in/" className="text-lg text-blue-300 font-medium">
                         Vivekanand Education Society's Institute of Technology
                         (VESIT)
-                    </p>
+                    </a>
                     <p className="text-gray-400 mt-2">
                         Passionate about technology, coding, and innovation
                     </p>

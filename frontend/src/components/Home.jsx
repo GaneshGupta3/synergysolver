@@ -1,25 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { 
-  Code, 
-  Trophy, 
-  Users, 
-  Zap, 
-  Target, 
-  CheckCircle, 
-  ArrowRight, 
-  Play,
-  Star,
+import {
+  ArrowRight,
   Building,
-  Clock,
-  Award,
   ChevronRight,
-  Menu,
-  X,
-  BookOpen,
+  Code,
   FileText,
-  Lightbulb,
   TrendingUp
 } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 function Home() {
@@ -94,7 +81,7 @@ function Home() {
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
               Build Your
               <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                {" "}Developer Resume
+                {" "}Developer Skills
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto">
