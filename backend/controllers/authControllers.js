@@ -66,17 +66,21 @@ const registerController = async(req ,res)=>{
 const logoutController = (req, res) => {
     console.log("Logging out - NODE_ENV:", process.env.NODE_ENV);
 
-    // res.clearCookie("token", { path: "/" });   
-
-    res.clearCookie("token", {
+    const cookieOptions = {
         path: "/",
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "None"
-    });
+    };
+
+    if (process.env.NODE_ENV === "production") {
+        cookieOptions.secure = true;           // only over HTTPS
+        cookieOptions.sameSite = "None";       // cross-site cookie support
+    }
+
+    res.clearCookie("token", cookieOptions);
 
     res.json({ message: "Cookie deleted successfully" });
 };
+
 
 
 
