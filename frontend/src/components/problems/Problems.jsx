@@ -108,7 +108,7 @@ const Problems = () => {
                         <DropDown text="Difficulty" options={difficultyOptions} />
                         <DropDown text="Topic" options={topicOptions} />
                         <DropDown text="Status" options={statusOptions} />
-                        <DropDown text="Sort By" options={sortOptions} />
+                        <DropDown className="bg-amber-50" text="Sort By" options={sortOptions} />
 
                         {/* Results count */}
                         <div className="ml-auto text-sm text-slate-300 bg-slate-600/60 px-4 py-3 rounded-xl border border-slate-500/30 backdrop-blur-sm">

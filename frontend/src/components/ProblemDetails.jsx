@@ -1,15 +1,9 @@
 import axios from "axios";
-import {
-    AlertTriangle,
-    ChevronDown,
-    ChevronUp,
-    Users
-} from "lucide-react";
+import { AlertTriangle, ChevronDown, ChevronUp, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { authSliceActions } from "../store/authSlice";
 import Attempters from "./Attempters";
 import GithubLink from "./GithubLink";
 import Goodies from "./Goodies";
@@ -26,12 +20,22 @@ export default function ProblemDetails() {
     const { problemId } = useParams();
     const [currentUser, setCurrentUser] = useState(null);
     const proposedSolution = useRef(null);
+    const solutionText = useRef(null);
+    const [solutionVideoUrl, setSolutionVideoUrl] = useState(null);
     const [expandedSection, setExpandedSection] = useState({
         attempters: false,
         accessPending: false,
         requestAccess: false,
+        submitSolution: false,
     });
-    const [expandedApproaches, setExpandedApproaches] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    const toggleSection = (sectionName) => {
+        setExpandedSection((prev) => ({
+            ...prev,
+            [sectionName]: !prev[sectionName],
+        }));
+    };
 
     const toggleApproachVisibility = (approachId) => {
         setExpandedApproaches((prev) => ({
@@ -40,31 +44,10 @@ export default function ProblemDetails() {
         }));
     };
 
-    const dispatch = useDispatch();
+    const [expandedApproaches, setExpandedApproaches] = useState({});
 
     const location = useLocation();
     const currentURL = `${window.location.origin}${location.pathname}${location.search}`;
-
-    const toggleExpandedAccessPending = () => {
-        setExpandedSection((prev) => ({
-            ...prev,
-            accessPending: !prev.accessPending,
-        }));
-    };
-
-    const toggleExpandedAttempters = () => {
-        setExpandedSection((prev) => ({
-            ...prev,
-            attempters: !expandedSection.attempters,
-        }));
-    };
-
-    const toggleExpandedRequestAccess = () => {
-        setExpandedSection((prev) => ({
-            ...prev,
-            requestAccess: !expandedSection.requestAccess,
-        }));
-    };
 
     const handleAcceptRequest = async (solverId, problemId) => {
         try {
@@ -83,7 +66,7 @@ export default function ProblemDetails() {
         }
     };
 
-    const handleRejectRequest = async (solverId , problemId) => {
+    const handleRejectRequest = async (solverId, problemId) => {
         try {
             const response = await axios.post(
                 `${
@@ -118,6 +101,29 @@ export default function ProblemDetails() {
         } catch (error) {
             console.error("Error requesting access:", error);
             toast.error("Failed to request access");
+        }
+    };
+
+    const handleSubmitSolution = async () => {
+        try {
+            const response = await axios.post(
+                `${
+                    import.meta.env.VITE_API_BASE_URL
+                }/api/problem/submitSolution/${problemId}`,
+                {
+                    solutionText: solutionText.current.value,
+                    solutionVideoUrl: solutionVideoUrl,
+                },
+                { withCredentials: true }
+            );
+            if (response.data.success) {
+                toast.success("solution submitted successfully");
+            }
+            console.log(response);
+            setProblem(response.data.problem);
+            setCurrentUser(response.data.user);
+        } catch (error) {
+            toast.error("can't submit solution, try again!");
         }
     };
 
@@ -189,6 +195,7 @@ export default function ProblemDetails() {
         };
 
         fetchProblem();
+        setLoading(false);
     }, [problemId]);
 
     const formatDate = (dateString) => {
@@ -245,184 +252,231 @@ export default function ProblemDetails() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-800 pt-[120px] p-6">
-            <div className="max-w-5xl mx-auto">
-                <div className="bg-slate-700/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 overflow-hidden">
-                    {/* Problem Header */}
-                    <ProblemHeader
-                        formatDate={formatDate}
-                        problem={problem}
-                        difficultyConfig={difficultyConfig}
-                        timeRemaining={timeRemaining}
-                    ></ProblemHeader>
-
-                    {/* Problem Content */}
-                    <div className="p-8 space-y-8">
-                        {/* Tags */}
-                        {problem.tags && problem.tags.length > 0 && (
-                            <ProblemDescription
+        <>
+            {loading ? (
+                <div className="flex flex-col items-center justify-center py-32">
+                    <div className="relative">
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-600 border-t-purple-500 mb-6 shadow-lg"></div>
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 blur-xl animate-pulse"></div>
+                    </div>
+                    <div className="text-slate-300 text-xl font-medium">
+                        Loading amazing problems...
+                    </div>
+                    <div className="text-slate-400 text-sm mt-2">
+                        Preparing your coding adventure ⚡
+                    </div>
+                </div>
+            ) : (
+                <div className="min-h-screen bg-slate-800 pt-[120px] p-6">
+                    <div className="max-w-5xl mx-auto">
+                        <div className="bg-slate-700/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-600/50 overflow-hidden">
+                            {/* Problem Header */}
+                            <ProblemHeader
+                                formatDate={formatDate}
                                 problem={problem}
-                            ></ProblemDescription>
-                        )}
+                                difficultyConfig={difficultyConfig}
+                                timeRemaining={timeRemaining}
+                            ></ProblemHeader>
 
-                        {/* Github Link */}
-                        {problem.githubLink && (
-                            <GithubLink
-                                githubLink={problem.githubLink}
-                            ></GithubLink>
-                        )}
-
-                        {/* Goodies */}
-                        {problem.goodies && (
-                            <Goodies problem={problem}></Goodies>
-                        )}
-
-                        {/* Attempters */}
-                        {problem.attempters &&
-                            problem.attempters.length > 0 && (
-                                <div className="bg-slate-600/40 border cursor-pointer border-slate-500/50 rounded-xl p-6 hover:bg-slate-600/50 transition-colors">
-                                    <div
-                                        onClick={toggleExpandedAttempters}
-                                        className="flex items-center justify-between mb-4"
-                                    >
-                                        <h3 className="flex items-center  gap-3 text-xl font-bold text-slate-100">
-                                            <div className="p-2 bg-purple-600/20 rounded-lg border border-purple-500/30">
-                                                <Users
-                                                    size={20}
-                                                    className="text-purple-300"
-                                                />
-                                            </div>
-                                            <span>
-                                                Participants (
-                                                {problem.attempters.length})
-                                            </span>
-                                        </h3>
-                                        <button className="flex items-center gap-2 text-purple-300 hover:text-purple-200 font-medium transition-colors">
-                                            {expandedSection.attempters ? (
-                                                <>
-                                                    Show Less{" "}
-                                                    <ChevronUp size={16} />
-                                                </>
-                                            ) : (
-                                                <>
-                                                    Show All{" "}
-                                                    <ChevronDown size={16} />
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-
-                                    <Attempters
+                            {/* Problem Content */}
+                            <div className="p-8 space-y-8">
+                                {/* Tags */}
+                                {problem.tags && problem.tags.length > 0 && (
+                                    <ProblemDescription
                                         problem={problem}
-                                        expandedSection={expandedSection}
-                                    ></Attempters>
-                                </div>
-                            )}
+                                    ></ProblemDescription>
+                                )}
 
-                        {/* Access Pending */}
-                        {problem.accessPending &&
-                            problem.accessPending.length > 0 && (
-                                <div className="bg-slate-600/40 border border-slate-500/50 rounded-xl p-6">
-                                    <h3 className="flex items-center gap-3 text-xl font-bold mb-4 text-slate-100">
-                                        <div className="p-2 bg-amber-600/20 rounded-lg border border-amber-500/30">
-                                            <AlertTriangle
-                                                size={20}
-                                                className="text-amber-300"
-                                            />
-                                        </div>
-                                        <span>
-                                            Access Requests (
-                                            {problem.accessPending.length})
-                                        </span>
-                                    </h3>
+                                {/* Github Link */}
+                                {problem.githubLink && (
+                                    <GithubLink
+                                        githubLink={problem.githubLink}
+                                    ></GithubLink>
+                                )}
 
-                                    <div
-                                        onClick={toggleExpandedAccessPending}
-                                        className="group p-5 bg-slate-700/50 border border-slate-500/50 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-amber-500/50 hover:bg-slate-700/70 mb-4"
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
-                                                <p className="text-slate-200 font-medium">
-                                                    <span className="text-amber-300 font-bold">
+                                {/* Goodies */}
+                                {problem.goodies && (
+                                    <Goodies problem={problem}></Goodies>
+                                )}
+
+                                {/* Attempters */}
+                                {problem.attempters &&
+                                    problem.attempters.length > 0 && (
+                                        <div className="bg-slate-600/40 border cursor-pointer border-slate-500/50 rounded-xl p-6 hover:bg-slate-600/50 transition-colors">
+                                            <div
+                                                onClick={() =>
+                                                    toggleSection("attempters")
+                                                }
+                                                className="flex items-center justify-between mb-4"
+                                            >
+                                                <h3 className="flex items-center  gap-3 text-xl font-bold text-slate-100">
+                                                    <div className="p-2 bg-purple-600/20 rounded-lg border border-purple-500/30">
+                                                        <Users
+                                                            size={20}
+                                                            className="text-purple-300"
+                                                        />
+                                                    </div>
+                                                    <span>
+                                                        Participants (
                                                         {
-                                                            problem
-                                                                .accessPending
+                                                            problem.attempters
                                                                 .length
                                                         }
-                                                    </span>{" "}
-                                                    user
-                                                    {problem.accessPending
-                                                        .length !== 1
-                                                        ? "s"
-                                                        : ""}{" "}
-                                                    waiting for access approval
-                                                </p>
+                                                        )
+                                                    </span>
+                                                </h3>
+                                                <button className="flex items-center gap-2 text-purple-300 hover:text-purple-200 font-medium transition-colors">
+                                                    {expandedSection.attempters ? (
+                                                        <>
+                                                            Show Less{" "}
+                                                            <ChevronUp
+                                                                size={16}
+                                                            />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            Show All{" "}
+                                                            <ChevronDown
+                                                                size={16}
+                                                            />
+                                                        </>
+                                                    )}
+                                                </button>
                                             </div>
-                                            <div className="text-amber-400 group-hover:text-amber-300 transition-colors">
-                                                {expandedSection.accessPending ? (
-                                                    <ChevronUp size={20} />
-                                                ) : (
-                                                    <ChevronDown size={20} />
-                                                )}
-                                            </div>
+
+                                            <Attempters
+                                                problem={problem}
+                                                expandedSection={
+                                                    expandedSection
+                                                }
+                                            ></Attempters>
                                         </div>
-                                    </div>
+                                )}
 
-                                    {expandedSection.accessPending && (
-                                        <div className="space-y-4">
-                                            {/* Section Header */}
-                                            
-
-                                            {/* Request Cards */}
-                                            <div className="space-y-4">
-                                                {problem.accessPending.map(
-                                                    (user, idx) => (
-                                                        <RequestCards
-                                                            toggleApproachVisibility={
-                                                                toggleApproachVisibility
-                                                            }
-                                                            expandedApproaches={
-                                                                expandedApproaches
-                                                            }
-                                                            handleAcceptRequest={
-                                                                handleAcceptRequest
-                                                            }
-                                                            handleRejectRequest={
-                                                                handleRejectRequest
-                                                            }
-                                                            key={idx}
-                                                            user={user}
-                                                            idx={idx}
-                                                            currentUser={
-                                                                currentUser
-                                                            }
-                                                            problem={problem}
-                                                        ></RequestCards>
+                                {/* Access Pending */}
+                                {problem.accessPending &&
+                                    problem.accessPending.length > 0 && (
+                                        <div className="bg-slate-600/40 border border-slate-500/50 rounded-xl p-6">
+                                            <h3 className="flex items-center gap-3 text-xl font-bold mb-4 text-slate-100">
+                                                <div className="p-2 bg-amber-600/20 rounded-lg border border-amber-500/30">
+                                                    <AlertTriangle
+                                                        size={20}
+                                                        className="text-amber-300"
+                                                    />
+                                                </div>
+                                                <span>
+                                                    Access Requests (
+                                                    {
+                                                        problem.accessPending
+                                                            .length
+                                                    }
                                                     )
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                    </div>
+                                                </span>
+                                            </h3>
 
-                    {/* Problem Actions */}
-                    <ProblemActions
-                        requestAccess={requestAccess}
-                        proposedSolution={proposedSolution}
-                        toggleExpandedRequestAccess={
-                            toggleExpandedRequestAccess
-                        }
-                        problem={problem}
-                        copyLink={copyLink}
-                        handleCopy={handleCopy}
-                        currentUser={currentUser}
-                        expandedSection={expandedSection}
-                    ></ProblemActions>
+                                            <div
+                                                onClick={() =>
+                                                    toggleSection(
+                                                        "accessPending"
+                                                    )
+                                                }
+                                                className="group p-5 bg-slate-700/50 border border-slate-500/50 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-amber-500/50 hover:bg-slate-700/70 mb-4"
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
+                                                        <p className="text-slate-200 font-medium">
+                                                            <span className="text-amber-300 font-bold">
+                                                                {
+                                                                    problem
+                                                                        .accessPending
+                                                                        .length
+                                                                }
+                                                            </span>{" "}
+                                                            user
+                                                            {problem
+                                                                .accessPending
+                                                                .length !== 1
+                                                                ? "s"
+                                                                : ""}{" "}
+                                                            waiting for access
+                                                            approval
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-amber-400 group-hover:text-amber-300 transition-colors">
+                                                        {expandedSection.accessPending ? (
+                                                            <ChevronUp
+                                                                size={20}
+                                                            />
+                                                        ) : (
+                                                            <ChevronDown
+                                                                size={20}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {expandedSection.accessPending && (
+                                                <div className="space-y-4">
+                                                    {/* Section Header */}
+
+                                                    {/* Request Cards */}
+                                                    <div className="space-y-4">
+                                                        {problem.accessPending.map(
+                                                            (user, idx) => (
+                                                                <RequestCards
+                                                                    toggleApproachVisibility={
+                                                                        toggleApproachVisibility
+                                                                    }
+                                                                    expandedApproaches={
+                                                                        expandedApproaches
+                                                                    }
+                                                                    handleAcceptRequest={
+                                                                        handleAcceptRequest
+                                                                    }
+                                                                    handleRejectRequest={
+                                                                        handleRejectRequest
+                                                                    }
+                                                                    key={idx}
+                                                                    user={user}
+                                                                    idx={idx}
+                                                                    currentUser={
+                                                                        currentUser
+                                                                    }
+                                                                    problem={
+                                                                        problem
+                                                                    }
+                                                                ></RequestCards>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                )}
+
+                                
+                            </div>
+
+                            {/* Problem Actions */}
+                            <ProblemActions
+                                requestAccess={requestAccess}
+                                proposedSolution={proposedSolution}
+                                toggleSection={toggleSection}
+                                problem={problem}
+                                copyLink={copyLink}
+                                handleCopy={handleCopy}
+                                currentUser={currentUser}
+                                expandedSection={expandedSection}
+                                solutionText={solutionText}
+                                setSolutionVideoUrl={setSolutionVideoUrl}
+                                handleSubmitSolution={handleSubmitSolution}
+                            ></ProblemActions>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            )}
+        </>
     );
 }

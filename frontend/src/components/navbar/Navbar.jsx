@@ -407,10 +407,18 @@ const Navbar = ({ transparent }) => {
                                 >
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 p-0.5">
                                         <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
-                                            <CgProfile
-                                                size={20}
-                                                className="text-gray-300"
-                                            />
+                                            {user.profilePic ? (
+                                                <img
+                                                    src={user.profilePic}
+                                                    alt="User profile"
+                                                    className="w-full h-full object-cover rounded-full"
+                                                />
+                                            ) : (
+                                                <CgProfile
+                                                    className="text-gray-300"
+                                                    size={24}
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                     <span className="font-medium text-white">

@@ -24,6 +24,34 @@ const ProblemSchema = new mongoose.Schema(
             enum: ["Easy", "Medium", "Hard"],
             message: "Difficulty must be Easy, Medium, or Hard",
         },
+        tags: {
+            type: [String],
+            validate: {
+                validator: function (tags) {
+                    return new Set(tags).size === tags.length;
+                },
+                message: "Tags must be unique!",
+            },
+        },
+        githubLink: {
+            type: String,
+            validate: {
+                validator: function (v) {
+                    return /^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+$/i.test(
+                        v
+                    );
+                },
+                message: "Invalid GitHub link!",
+            },
+        },
+        goodies: {
+            type: String,
+            default: null,
+        },
+        deadline: {
+            type: Date,
+            default: null, // Ensures the problem has a deadline
+        },
         accessPending: [
             {
                 solverId: {
@@ -35,23 +63,6 @@ const ProblemSchema = new mongoose.Schema(
                 proposedSolution: {
                     type: String,
                     required: true,
-                },
-            },
-        ],
-        attempters: [
-            {
-                userId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "User", // Refers to User model
-                    required: true,
-                },
-                solved: {
-                    type: Boolean,
-                    default: false, // Default: Not solved
-                },
-                proposedSolution: {
-                    type: String,
-                    required: false,
                 },
             },
         ],
@@ -81,38 +92,48 @@ const ProblemSchema = new mongoose.Schema(
                 },
             },
         ],
-        tags: {
-            type: [String],
-            validate: {
-                validator: function (tags) {
-                    return new Set(tags).size === tags.length;
+        attempters: [
+            {
+                userId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User", // Refers to User model
+                    required: true,
                 },
-                message: "Tags must be unique!",
-            },
-        },
-        githubLink: {
-            type: String,
-            validate: {
-                validator: function (v) {
-                    return /^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+$/i.test(
-                        v
-                    );
+                solved: {
+                    type: Boolean,
+                    default: false, // Default: Not solved
                 },
-                message: "Invalid GitHub link!",
+                proposedSolution: {
+                    type: String,
+                    required: false,
+                },
             },
-        },
-        goodies: {
-            type: String,
-            default: null,
-        },
-        deadline: {
-            type: Date,
-            default: null, // Ensures the problem has a deadline
-        },
+        ],
+        solutions: [
+            {
+                solverId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
+                },
+                solutionVideoUrl: {
+                    type: String,
+                    required: true,
+                },
+                solutionText: {
+                    type: String,
+                    required: true,
+                },
+                accepted: {
+                    type: Boolean,
+                    default: false,
+                },
+            },
+        ],
         solved: {
             type: Boolean,
             default: false,
-            index: true, // Optimizes queries for solved problems
+            index: true,
         },
         solveBy: {
             type: mongoose.Schema.Types.ObjectId,
@@ -121,11 +142,11 @@ const ProblemSchema = new mongoose.Schema(
         },
         issuedAt: {
             type: Date,
-            default: Date.now, // Automatically sets the issue date
+            default: Date.now,
         },
     },
     { timestamps: true }
-); // Adds createdAt and updatedAt
+);
 
 const Problem = mongoose.model("Problem", ProblemSchema);
 

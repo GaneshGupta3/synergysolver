@@ -404,6 +404,57 @@ const rejectRequest = async (req, res) => {
     }
 };
 
+const submitSolution = async (req,res) => {
+    try {
+
+        const {problemId} = req.params;
+        const {solutionVideoUrl , solutionText} = req.body;
+        const userId = req.user._id;
+        const problem = await findProblemWithValidation(problemId , res);
+        if(problem.solutions.some(sol => sol.solverId.toString() === userId.toString())){
+            return res.status(400).json({
+                success:false,
+                message: "you have already submitted a solution for this problem"
+            })
+        }
+        const solution = {
+            solverId : userId,
+            solutionVideoUrl: solutionVideoUrl,
+            solutionText: solutionText,
+            accepted:false,
+        }
+        problem.solutions.push(solution);
+        const savedProblem = await problem.save();
+        await savedProblem.populate("issuedBy", "username email _id");
+        await savedProblem.populate("accessPending.solverId", "username email _id");
+        await savedProblem.populate("attempters.userId", "username email _id");
+        const user = await findUserWithValidation(userId , res);
+        
+        const userSolution = {
+            problemId: savedProblem._id,
+            solutionVideoUrl: solutionVideoUrl,
+            solutionText: solutionText,
+            accepted: false,
+        }
+
+        user.solutions.push(userSolution);
+        const savedUser =await user.save();
+
+        return res.json({
+            success: true ,
+            problem : savedProblem ,
+            user: savedUser,
+        })
+        
+    } catch (error) {
+        console.error("error submitting solution: " , error.message);
+        res.status(500).json({
+            success:false , 
+            message: "internal server error during solution submission"
+        })
+    }
+}
+
 module.exports = {
     issueProblem,
     getAllProblems,
@@ -414,4 +465,5 @@ module.exports = {
     grantSolution,
     acceptRequest,
     rejectRequest,
+    submitSolution
 };

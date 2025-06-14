@@ -198,12 +198,12 @@ function Home() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="bg-white text-purple-900 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-colors">
+            <Link to={"/signup"} className="bg-white text-purple-900 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-colors">
               Start Free Today
-            </button>
-            <button className="border border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/10 transition-colors">
+            </Link>
+            <Link to="/problems" className="border border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/10 transition-colors">
               Explore Challenges
-            </button>
+            </Link>
           </div>
         </div>
       </section>

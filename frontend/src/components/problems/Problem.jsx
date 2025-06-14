@@ -160,11 +160,6 @@ const Problem = ({ problem }) => {
                             <span className="font-medium">{problem.attempters.length}</span>
                             <span>Solvers</span>
                         </div>
-                        <div className="flex items-center gap-2 text-white/70 group-hover:text-white/90 transition-colors">
-                            <span className="text-orange-400 text-base">⭐</span>
-                            <span className="font-medium">4.8</span>
-                            <span>Rating</span>
-                        </div>
                     </div>
                     
                     <div className="flex items-center gap-2 text-white/70 group-hover:text-blue-400 font-semibold text-sm transition-all duration-300 group-hover:gap-3">

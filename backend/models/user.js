@@ -74,6 +74,28 @@ const UserSchema = new mongoose.Schema(
                 },
             },
         ],
+
+        solutions: [
+            {
+                problemId: {
+                    type: mongoose.Types.ObjectId,
+                    ref: "Problem",
+                    required: true,
+                },
+                solutionVideoUrl: {
+                    type: String,
+                    required: true,
+                },
+                solutionText: {
+                    type: String,
+                    required: true,
+                },
+                accepted: {
+                    type: Boolean,
+                    default: false,
+                },
+            },
+        ],
         
         pastProjects: [
             {
