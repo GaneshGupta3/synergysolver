@@ -76,7 +76,7 @@ const Navbar = ({ transparent }) => {
                         <div className="flex items-center space-x-4">
                             <div
                                 className="relative cursor-pointer group transition-all duration-500 hover:scale-110"
-                                onClick={() => navigate("/dashboard")}
+                                onClick={() => navigate("/")}
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">

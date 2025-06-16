@@ -66,7 +66,7 @@ const Problems = () => {
             </div>
 
             {/* Header */}
-            <div className="sticky top-0 z-40 bg-slate-800 backdrop-blur-xl border-b border-slate-600/50 shadow-lg">
+            <div className="sticky top-0 z-10 bg-slate-800 backdrop-blur-xl border-b border-slate-600/50 shadow-lg">
                 <div className="max-w-7xl mx-auto px-6 py-8">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                         {/* Title */}
