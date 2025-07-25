@@ -1,19 +1,20 @@
-import React, { useState } from "react";
 import {
-    Mail,
-    Phone,
-    MapPin,
-    Send,
     Book,
-    Code,
-    Linkedin,
-    Github,
     Calendar,
+    Github,
     GraduationCap,
-    User,
+    Linkedin,
+    Mail,
+    MapPin,
     MessageCircle,
+    Phone,
+    Send,
+    User,
 } from "lucide-react";
+import { useState } from "react";
 import { SiLeetcode } from "react-icons/si";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function ContactMe() {
     const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ export default function ContactMe() {
         email: "",
         subject: "",
         message: "",
-        purpose: "project",
+        purpose: "Internship Opportunity",
     });
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -35,25 +36,33 @@ export default function ContactMe() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!formData.name || !formData.email || !formData.subject || !formData.message || !formData.purpose) {
+            toast.error("fill all the fields");
+        }
         setIsLoading(true);
 
-        // Simulate email sending
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/api/contactMe/sendMessage`,
+                formData
+            );
 
-        setIsLoading(false);
-        setIsSubmitted(true);
-
-        // Reset form after 3 seconds
-        setTimeout(() => {
-            setIsSubmitted(false);
-            setFormData({
-                name: "",
-                email: "",
-                subject: "",
-                message: "",
-                purpose: "project",
-            });
-        }, 3000);
+            if (response.status === 201) {
+                setIsSubmitted(true);
+                setFormData({
+                    name: "",
+                    email: "",
+                    subject: "",
+                    message: "",
+                    purpose: "Internship Opportunity",
+                });
+            }
+        } catch (error) {
+            console.error("Submission failed:", error.message);
+            // Optionally show an error toast or message to user
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const contactInfo = [
@@ -78,12 +87,12 @@ export default function ContactMe() {
     ];
 
     const purposeOptions = [
-        "Academic Project",
         "Internship Opportunity",
+        "Problem",
+        "Bug Report",
         "Collaboration",
         "Freelance Work",
-        "Study Group",
-        "General Inquiry",
+        "Job Offering",
     ];
 
     const socialLinks = [
@@ -116,7 +125,10 @@ export default function ContactMe() {
                         <GraduationCap className="w-6 h-6" />
                         <span>Final Year B.Tech IT Student</span>
                     </div>
-                    <a href="http://vesit.ves.ac.in/" className="text-lg text-blue-300 font-medium">
+                    <a
+                        href="http://vesit.ves.ac.in/"
+                        className="text-lg text-blue-300 font-medium"
+                    >
                         Vivekanand Education Society's Institute of Technology
                         (VESIT)
                     </a>
@@ -162,6 +174,7 @@ export default function ContactMe() {
                                             onChange={handleInputChange}
                                             className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                                             placeholder="Enter your name"
+                                            required
                                         />
                                     </div>
                                     <div>
@@ -175,6 +188,7 @@ export default function ContactMe() {
                                             onChange={handleInputChange}
                                             className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                                             placeholder="your@email.com"
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -216,6 +230,7 @@ export default function ContactMe() {
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                                         placeholder="What's this about?"
+                                        required
                                     />
                                 </div>
 
@@ -325,6 +340,7 @@ export default function ContactMe() {
                                     <a
                                         key={index}
                                         href={social.url}
+                                        target="_blank"
                                         className="bg-white/10 p-3 rounded-xl hover:bg-white/20 transition-all duration-300 transform hover:scale-110"
                                     >
                                         <social.icon
@@ -335,6 +351,7 @@ export default function ContactMe() {
                                 <a
                                     href={"https://leetcode.com/ganesh310104/"}
                                     className="bg-white/10 p-3 rounded-xl hover:bg-white/20 transition-all duration-300 transform hover:scale-110"
+                                    target="_blank"
                                 >
                                     <SiLeetcode className={`w-6 h-6`} />
                                 </a>
@@ -350,7 +367,6 @@ export default function ContactMe() {
                                 </h3>
                             </div>
                             <div className="space-y-2 text-gray-300">
-                                
                                 <div className="text-sm text-green-400 mt-3">
                                     ✓ Open to internships and project
                                     collaborations

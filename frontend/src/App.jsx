@@ -1,18 +1,18 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./components/Home";
-import SignUpCard from "./components/SignupCard/SignUpCard";
-import Layout from "./components/layout/Layout";
-import ProfilePage from "./components/profile/ProfilePage";
-import LoginCard from "./components/LoginCard/LoginCard";
-import Dashboard from "./components/Dashboard/Dashboard";
-import ChatPage from "./components/Chatpage/ChatPage";
 import { ToastContainer } from 'react-toastify';
-import Problems from "./components/problems/Problems";
 import AddProblem from "./components/AddProblem";
+import AuthInitializer from "./components/AuthInitializer";
+import ChatPage from "./components/Chatpage/ChatPage";
+import ContactMe from "./components/ContactMe";
+import Dashboard from "./components/Dashboard/Dashboard";
+import Home from "./components/Home";
+import LoginCard from "./components/LoginCard/LoginCard";
 import ProblemDetails from "./components/ProblemDetails";
 import ProfileDetails from "./components/ProfileDetails";
-import ContactMe from "./components/ContactMe";
-import AuthInitializer from "./components/AuthInitializer";
+import SignUpCard from "./components/SignupCard/SignUpCard";
+import Layout from "./components/layout/Layout";
+import Problems from "./components/problems/Problems";
+import ProfilePage from "./components/profile/ProfilePage";
 
 function App() {
     return (
@@ -38,7 +38,7 @@ function App() {
                     </Routes>
                 </Layout>
             </BrowserRouter>
-            <ToastContainer />
+            <ToastContainer autoClose={1000} />
         </>
     );
 }

@@ -279,8 +279,8 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, #2d3748, #1a202c)'}}>
-                <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20">
+            <div className="min-h-screen flex items-center justify-center bg-slate-900">
+                <div className="bg-slate-800 rounded-2xl p-8 shadow-2xl border border-slate-700">
                     <div className="text-xl font-semibold text-white">
                         Loading dashboard...
                     </div>
@@ -290,9 +290,9 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="min-h-screen pt-[90px]" style={{background: 'linear-gradient(to bottom right, #2d3748, #1a202c)'}}>
+        <div className="min-h-screen pt-[90px] bg-slate-900">
             {/* Top Navigation */}
-            <div className="bg-white/10  backdrop-blur-lg border-b border-white/20">
+            <div className="bg-slate-800 border-b border-slate-700">
                 <div className="container mx-auto py-4 px-4 md:px-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
@@ -305,7 +305,7 @@ export default function Dashboard() {
                             <div className="relative mr-4">
                                 <Bell
                                     size={20}
-                                    className="text-white/70 hover:text-white cursor-pointer transition-colors"
+                                    className="text-slate-400 hover:text-white cursor-pointer transition-colors"
                                 />
                                 {notifications.filter((n) => !n.read).length >
                                     0 && (
@@ -330,13 +330,13 @@ export default function Dashboard() {
 
             <div className="container mx-auto py-6 px-4 md:px-6">
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg p-4 flex items-center border border-white/20">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div className="bg-slate-800 rounded-xl shadow-lg p-6 flex items-center border border-slate-700">
                         <div className="rounded-full bg-green-500/20 p-3 mr-4">
                             <CheckCircle size={24} className="text-green-400" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-medium text-white/70">
+                            <h3 className="text-sm font-medium text-slate-400">
                                 Problems Solved
                             </h3>
                             <p className="text-2xl text-white font-bold">
@@ -345,12 +345,12 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg p-4 flex items-center border border-white/20">
+                    <div className="bg-slate-800 rounded-xl shadow-lg p-6 flex items-center border border-slate-700">
                         <div className="rounded-full bg-yellow-500/20 p-3 mr-4">
                             <Clock size={24} className="text-yellow-400" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-medium text-white/70">
+                            <h3 className="text-sm font-medium text-slate-400">
                                 In Progress
                             </h3>
                             <p className="text-2xl text-white font-bold">
@@ -359,12 +359,12 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg p-4 flex items-center border border-white/20">
+                    <div className="bg-slate-800 rounded-xl shadow-lg p-6 flex items-center border border-slate-700">
                         <div className="rounded-full bg-blue-500/20 p-3 mr-4">
                             <PlusCircle size={24} className="text-blue-400" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-medium text-white/70">
+                            <h3 className="text-sm font-medium text-slate-400">
                                 Problems Issued
                             </h3>
                             <p className="text-2xl text-white font-bold">
@@ -373,12 +373,12 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg p-4 flex items-center border border-white/20">
+                    <div className="bg-slate-800 rounded-xl shadow-lg p-6 flex items-center border border-slate-700">
                         <div className="rounded-full bg-purple-500/20 p-3 mr-4">
                             <Users size={24} className="text-purple-400" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-medium text-white/70">
+                            <h3 className="text-sm font-medium text-slate-400">
                                 Connections
                             </h3>
                             <p className="text-2xl text-white font-bold">
@@ -389,14 +389,14 @@ export default function Dashboard() {
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-xl shadow-lg mb-6 border border-white/20">
-                    <div className="border-b border-white/20">
+                <div className="bg-slate-800 rounded-xl shadow-lg mb-6 border border-slate-700">
+                    <div className="border-b border-slate-700">
                         <nav className="flex">
                             <button
-                                className={`px-4 py-3 font-medium text-sm transition-colors ${
+                                className={`px-6 py-4 font-medium text-sm transition-colors ${
                                     activeTab === "problems"
                                         ? "text-blue-400 border-b-2 border-blue-400"
-                                        : "text-white/70 hover:text-white"
+                                        : "text-slate-400 hover:text-white"
                                 }`}
                                 onClick={() => setActiveTab("problems")}
                             >
@@ -407,10 +407,10 @@ export default function Dashboard() {
                             </button>
 
                             <button
-                                className={`px-4 py-3 font-medium text-sm transition-colors ${
+                                className={`px-6 py-4 font-medium text-sm transition-colors ${
                                     activeTab === "network"
                                         ? "text-blue-400 border-b-2 border-blue-400"
-                                        : "text-white/70 hover:text-white"
+                                        : "text-slate-400 hover:text-white"
                                 }`}
                                 onClick={() => setActiveTab("network")}
                             >
@@ -420,40 +420,28 @@ export default function Dashboard() {
                                 </span>
                             </button>
 
-                            <button
-                                className={`px-4 py-3 font-medium text-sm transition-colors ${
-                                    activeTab === "achievements"
-                                        ? "text-blue-400 border-b-2 border-blue-400"
-                                        : "text-white/70 hover:text-white"
-                                }`}
-                                onClick={() => setActiveTab("achievements")}
-                            >
-                                <span className="flex items-center">
-                                    <Award size={16} className="mr-2" />
-                                    Achievements
-                                </span>
-                            </button>
+                            
                         </nav>
                     </div>
 
                     {/* Tab Content */}
-                    <div className="p-4">
+                    <div className="p-6">
                         {/* Problems Tab */}
                         {activeTab === "problems" && (
                             <div>
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-lg font-medium text-white">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl font-semibold text-white">
                                         My Problems
                                     </h2>
                                     <div className="relative">
                                         <Search
                                             size={16}
-                                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50"
+                                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
                                         />
                                         <input
                                             type="text"
                                             placeholder="Search problems..."
-                                            className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+                                            className="pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                                             value={searchQuery}
                                             onChange={(e) =>
                                                 setSearchQuery(e.target.value)
@@ -462,36 +450,36 @@ export default function Dashboard() {
                                     </div>
                                 </div>
 
-                                <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+                                <div className="bg-slate-700 border border-slate-600 rounded-xl overflow-hidden">
                                     <div className="overflow-x-auto">
-                                        <table className="min-w-full divide-y divide-white/10">
-                                            <thead className="bg-white/5">
+                                        <table className="min-w-full divide-y divide-slate-600">
+                                            <thead className="bg-slate-800">
                                                 <tr>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                                                         Problem
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                                                         Difficulty
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                                                         Tags
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                                                         Status
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                                                         Attempted
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-white/10">
+                                            <tbody className="divide-y divide-slate-600">
                                                 {filteredProblems.map(
                                                     (problem) => (
                                                         <tr
                                                             key={
                                                                 problem.problemId
                                                             }
-                                                            className="hover:bg-white/5 transition-colors"
+                                                            className="hover:bg-slate-600 transition-colors"
                                                         >
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <div className="font-medium text-white">
@@ -499,7 +487,7 @@ export default function Dashboard() {
                                                                         problem.title
                                                                     }
                                                                 </div>
-                                                                <div className="text-sm text-white/70 truncate max-w-md">
+                                                                <div className="text-sm text-slate-400 truncate max-w-md">
                                                                     {
                                                                         problem.problemStatement
                                                                     }
@@ -507,14 +495,14 @@ export default function Dashboard() {
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <span
-                                                                    className={`px-2 py-1 text-xs rounded-full ${
+                                                                    className={`px-3 py-1 text-xs font-medium rounded-full ${
                                                                         problem.difficulty ===
                                                                         "Easy"
-                                                                            ? "bg-green-500/20 text-green-400"
+                                                                            ? "bg-green-500/20 text-green-400 border border-green-500/30"
                                                                             : problem.difficulty ===
                                                                               "Medium"
-                                                                            ? "bg-yellow-500/20 text-yellow-400"
-                                                                            : "bg-red-500/20 text-red-400"
+                                                                            ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                                                                            : "bg-red-500/20 text-red-400 border border-red-500/30"
                                                                     }`}
                                                                 >
                                                                     {
@@ -533,7 +521,7 @@ export default function Dashboard() {
                                                                                 key={
                                                                                     idx
                                                                                 }
-                                                                                className="bg-white/10 text-white/80 px-2 py-1 rounded text-xs"
+                                                                                className="bg-slate-600 text-slate-300 px-2 py-1 rounded-md text-xs"
                                                                             >
                                                                                 {
                                                                                     tag
@@ -545,10 +533,10 @@ export default function Dashboard() {
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <span
-                                                                    className={`px-2 py-1 text-xs rounded-full ${
+                                                                    className={`px-3 py-1 text-xs font-medium rounded-full ${
                                                                         problem.solved
-                                                                            ? "bg-green-500/20 text-green-400"
-                                                                            : "bg-yellow-500/20 text-yellow-400"
+                                                                            ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                                                                            : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
                                                                     }`}
                                                                 >
                                                                     {problem.solved
@@ -556,7 +544,7 @@ export default function Dashboard() {
                                                                         : "In Progress"}
                                                                 </span>
                                                             </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
+                                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
                                                                 {formatRelativeTime(
                                                                     problem.attemptedAt
                                                                 )}
@@ -569,8 +557,8 @@ export default function Dashboard() {
                                     </div>
 
                                     {filteredProblems.length === 0 && (
-                                        <div className="text-center py-6">
-                                            <p className="text-white/70">
+                                        <div className="text-center py-8">
+                                            <p className="text-slate-400">
                                                 No problems found matching your
                                                 criteria
                                             </p>
@@ -583,33 +571,33 @@ export default function Dashboard() {
                         {/* Network Tab */}
                         {activeTab === "network" && (
                             <div>
-                                <h2 className="text-lg font-medium text-white mb-4">
+                                <h2 className="text-xl font-semibold text-white mb-6">
                                     My Network
                                 </h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {userData.contact.map((contact) => (
                                         <div
                                             key={contact.id}
-                                            className="bg-white/10 border border-white/20 rounded-xl p-4 flex items-center backdrop-blur-lg"
+                                            className="bg-slate-700 border border-slate-600 rounded-xl p-4 flex items-center"
                                         >
                                             <div>
                                                 <h3 className="font-medium text-white">
                                                     {contact.username}
                                                 </h3>
-                                                <p className="text-sm text-white/70">
+                                                <p className="text-sm text-slate-400">
                                                     {contact.email}
                                                 </p>
                                             </div>
                                         </div>
                                     ))}
 
-                                    <div className="bg-white/5 border border-dashed border-white/30 rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
+                                    <div className="bg-slate-700/50 border border-dashed border-slate-600 rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-slate-700 transition-colors">
                                         <div className="text-center">
                                             <PlusCircle
                                                 size={24}
-                                                className="mx-auto mb-2 text-white/50"
+                                                className="mx-auto mb-2 text-slate-400"
                                             />
-                                            <p className="text-sm font-medium text-white/70">
+                                            <p className="text-sm font-medium text-slate-400">
                                                 Find More Connections
                                             </p>
                                         </div>
@@ -619,83 +607,7 @@ export default function Dashboard() {
                         )}
 
                         {/* Achievements Tab */}
-                        {activeTab === "achievements" && (
-                            <div>
-                                <h2 className="text-lg text-white font-medium mb-4">
-                                    My Achievements
-                                </h2>
-                                <div className="space-y-4">
-                                    {userData.achievements.map(
-                                        (achievement, index) => (
-                                            <div
-                                                key={index}
-                                                className="bg-white/10 border border-white/20 rounded-xl p-4 backdrop-blur-lg"
-                                            >
-                                                <div className="flex items-center">
-                                                    <div
-                                                        className={`rounded-full p-3 mr-4 ${
-                                                            achievement.earned
-                                                                ? "bg-yellow-500/20"
-                                                                : "bg-white/10"
-                                                        }`}
-                                                    >
-                                                        <Award
-                                                            size={24}
-                                                            className={
-                                                                achievement.earned
-                                                                    ? "text-yellow-400"
-                                                                    : "text-white/50"
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <h3 className="font-medium text-white">
-                                                            {achievement.name}
-                                                        </h3>
-                                                        <p className="text-sm text-white/70">
-                                                            {
-                                                                achievement.description
-                                                            }
-                                                        </p>
-
-                                                        {achievement.earned ? (
-                                                            <p className="text-xs text-green-400 mt-1">
-                                                                Earned on{" "}
-                                                                {new Date(
-                                                                    achievement.date
-                                                                ).toLocaleDateString()}
-                                                            </p>
-                                                        ) : (
-                                                            <div className="mt-2">
-                                                                <div className="bg-white/20 rounded-full h-2 w-full">
-                                                                    <div
-                                                                        className="bg-blue-400 h-2 rounded-full"
-                                                                        style={{
-                                                                            width: `${
-                                                                                (achievement.progress /
-                                                                                    10) *
-                                                                                100
-                                                                            }%`,
-                                                                        }}
-                                                                    ></div>
-                                                                </div>
-                                                                <p className="text-xs text-white/70 mt-1">
-                                                                    {
-                                                                        achievement.progress
-                                                                    }
-                                                                    /10
-                                                                    completed
-                                                                </p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )
-                                    )}
-                                </div>
-                            </div>
-                        )}
+                        
                     </div>
                 </div>
             </div>

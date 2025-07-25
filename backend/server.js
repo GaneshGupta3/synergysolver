@@ -10,6 +10,7 @@ const MessageRouter = require("./routes/messageRoutes");
 const jwtAuth = require("./middlewares/jwtAuth");
 const User = require("./models/user");
 const ProblemRouter = require("./routes/problemRoutes");
+const ContactMeRouter = require("./routes/contactMeRoutes");
 
 const app = express();
 require("dotenv").config();
@@ -78,6 +79,8 @@ app.use("/api/user", UserRouter);
 app.use("/api/problem", ProblemRouter);
 
 app.use("/api/message", MessageRouter);
+
+app.use("/api/contactMe" , ContactMeRouter);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

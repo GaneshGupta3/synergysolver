@@ -114,7 +114,7 @@ const Navbar = ({ transparent }) => {
                                 navigateTo="rankings"
                             />
                             <NavLinkStyled
-                                text="Contact"
+                                text="Contact Us"
                                 navigateTo="contactus"
                             />
                         </div>
