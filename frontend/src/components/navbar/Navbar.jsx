@@ -7,13 +7,14 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import logoImg from "../../assets/blacklogo.png";
 import { useLocation } from "react-router-dom";
 import { Code } from "lucide-react";
+import { useUser } from "../../hooks/useUser";
 
 const Navbar = ({ transparent }) => {
     const Location = useLocation();
     const isLoginPage = Location.pathname === "/login";
     const isSignupPage = Location.pathname === "/signup";
     const navigate = useNavigate();
-    const { user, isLoggedIn } = useSelector((store) => store.authProvider);
+    const { user, isLoggedIn } = useUser();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");

@@ -38,7 +38,7 @@ export default function Dashboard() {
                     `${import.meta.env.VITE_API_BASE_URL}/api/user/check-auth`,
                     { withCredentials: true }
                 );
-                console.log(response.data);
+                // console.log(response.data);
                 dispatch(authSliceActions.login(response.data));
 
                 // const user = response.data;

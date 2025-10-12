@@ -1,23 +1,20 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "../../index.css";
 import { logoutAsync } from "../../store/authSlice";
 import LogoutButton from "../Logout/LogoutButton";
 import styles from "./ProfilePage.module.css";
+import { useUser } from "../../hooks/useUser";
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user } = useSelector((store) => store.authProvider);
+    const {user} = useUser();
 
     const handleLogout = async () => {
         await dispatch(logoutAsync());
         navigate("/login");
     };
-
-    if (!user) {
-        return <div className={styles.loader}>Loading...</div>; // Use loader class
-    }
 
     return (
         <div className={styles.profileBody}>

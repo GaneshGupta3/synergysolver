@@ -13,7 +13,6 @@ import SignUpCard from "./components/SignupCard/SignUpCard";
 import Layout from "./components/layout/Layout";
 import Problems from "./components/problems/Problems";
 import ProfilePage from "./components/profile/ProfilePage";
-
 function App() {
     return (
         <>

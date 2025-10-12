@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -35,19 +36,18 @@ export default function AddProblem() {
         }
 
         // Simulate API call
-        setTimeout(() => {
-            console.log("Form submitted:", formData);
-            alert("Problem submitted successfully!");
-            setFormData({
-                problemStatement: "",
-                difficulty: "",
-                tags: [],
-                githubLink: "",
-                goodies: "",
-                deadline: "2025-04-15T23:59:00.000Z",
-            });
-            setSubmitting(false);
-        }, 2000);
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/problem/issueProblem`, formData , { withCredentials: true });
+        console.log("Form submitted:", response.data);
+        alert("Problem submitted successfully!");
+        setFormData({
+            problemStatement: "",
+            difficulty: "",
+            tags: [],
+            githubLink: "",
+            goodies: "",
+            deadline: "2025-04-15T23:59:00.000Z",
+        });
+        setSubmitting(false);
     };
 
     if (loading) {

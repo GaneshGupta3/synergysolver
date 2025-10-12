@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import LogoutButton from "./Logout/LogoutButton";
 import { RxCross2 } from "react-icons/rx";
 
-export default function ProfileDetails() {
+export default function temp() {
     const { userId } = useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -72,7 +72,7 @@ export default function ProfileDetails() {
 
     const handleLogout = async () => {
         dispatch(logoutAsync()); // Calls API & updates Redux state
-        navigate("/");
+        navigate("/login");
     };
 
     const handleEditSkills = async () => {
@@ -309,6 +309,7 @@ export default function ProfileDetails() {
                                         alt={`${user.username}'s profile`}
                                         className="relative w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white/30 object-cover shadow-2xl transition-all duration-500 ease-out group-hover:scale-105 group-hover:border-white/50 group-hover:shadow-3xl"
                                     />
+
                                     {/* Status indicator */}
                                     <div className="absolute top-1 right-1 w-6 h-6 bg-green-400 border-3 border-white rounded-full shadow-lg"></div>
                                 </div>

@@ -68,34 +68,7 @@ const Problems = () => {
             {/* Header */}
             <div className="sticky top-0 z-10 bg-slate-800 backdrop-blur-xl border-b border-slate-600/50 shadow-lg">
                 <div className="max-w-7xl mx-auto px-6 py-8">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-                        {/* Title */}
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl shadow-lg">
-                                    <FaBrain className="text-2xl text-white" />
-                                </div>
-                                <h1 className="text-5xl font-black text-white">
-                                    Growth Arena
-                                </h1>+
-                            </div>
-                            <p className="text-slate-300 text-lg font-medium ml-16">
-                                Discover, solve, and master challenging problems ✨
-                            </p>
-                        </div>
-
-                        {/* Search Bar */}
-                        <div className="relative flex-1 max-w-md group">
-                            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-purple-400 transition-colors duration-200" />
-                            <input
-                                type="text"
-                                placeholder="Search problems or tags..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-12 pr-4 py-4 bg-slate-600/80 border border-slate-500/50 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 shadow-lg backdrop-blur-sm hover:bg-slate-600/90"
-                            />
-                        </div>
-                    </div>
+                    
 
                     {/* Filters */}
                     <div className="flex flex-wrap items-center gap-4 mt-8 p-6 bg-slate-700/60 rounded-2xl backdrop-blur-sm border border-slate-600/30">
