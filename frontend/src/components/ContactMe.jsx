@@ -81,7 +81,7 @@ export default function ContactMe() {
         {
             icon: MapPin,
             title: "Location",
-            details: "VESIT College, Chembur, Mumbai",
+            details: "Kurla, Mumbai",
             subtitle: "Maharashtra, India",
         },
     ];
