@@ -102,17 +102,67 @@ const addMultipleProblems = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
-
 const getAllProblems = async (req, res) => {
     try {
-        const problems = await Problem.find()
-            .populate("issuedBy", "username email profilePic") // optional: populate user info
-            .sort({ createdAt: -1 }); // latest first
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const search = req.query.search || "";
+        const difficulty = req.query.difficulty || "All";
+        const tag = req.query.tag || "All";
+        const sort = req.query.sort || "Newest";
+
+        const skip = (page - 1) * limit;
+
+        /** ---------------- FILTER QUERY ---------------- **/
+        const query = {};
+
+        // Search by statement or tags
+        if (search) {
+            query.$or = [
+                { problemStatement: { $regex: search, $options: "i" } },
+                { tags: { $regex: search, $options: "i" } },
+            ];
+        }
+
+        // Difficulty filter
+        if (difficulty !== "All") {
+            query.difficulty = difficulty;
+        }
+
+        // Tag filter
+        if (tag !== "All") {
+            query.tags = tag;
+        }
+
+        /** ---------------- SORT LOGIC ---------------- **/
+        let sortQuery = {};
+        if (sort === "Newest") sortQuery = { createdAt: -1 };
+        if (sort === "Oldest") sortQuery = { createdAt: 1 };
+        if (sort === "Difficulty") sortQuery = { difficulty: 1 };
+
+        /** ---------------- DB CALL ---------------- **/
+        const [problems, totalProblems] = await Promise.all([
+            Problem.find(query)
+                .populate("issuedBy", "username email profilePic")
+                .sort(sortQuery)
+                .skip(skip)
+                .limit(limit),
+
+            Problem.countDocuments(query),
+        ]);
 
         res.status(200).json({
             success: true,
-            count: problems.length,
-            data: { problems: problems, user: req.user },
+            data: {
+                problems,
+                pagination: {
+                    currentPage: page,
+                    totalPages: Math.ceil(totalProblems / limit),
+                    totalProblems,
+                    limit,
+                },
+                user: req.user,
+            },
         });
     } catch (error) {
         console.error("Error fetching problems:", error.message);
@@ -122,6 +172,7 @@ const getAllProblems = async (req, res) => {
         });
     }
 };
+
 
 const attemptProblem = async (req, res) => {
     //params : problemId
@@ -369,7 +420,10 @@ const rejectRequest = async (req, res) => {
         }
 
         // Move it to accessRejected
-        problem.accessRejected.push({solverId : rejectedRequest.solverId , proposedSolution: rejectedRequest.proposedSolution});
+        problem.accessRejected.push({
+            solverId: rejectedRequest.solverId,
+            proposedSolution: rejectedRequest.proposedSolution,
+        });
 
         // Remove from accessPending
         problem.accessPending = problem.accessPending.filter(
@@ -389,12 +443,11 @@ const rejectRequest = async (req, res) => {
         await problem.populate("issuedBy", "username email _id");
         await problem.populate("accessPending.solverId", "username email _id");
         await problem.populate("attempters.userId", "username email _id");
-       
 
         return res.status(200).json({
             success: true,
             message: "Request rejected successfully",
-            problem: problem
+            problem: problem,
         });
     } catch (error) {
         console.error("Error rejecting request:", error.message);
@@ -404,58 +457,82 @@ const rejectRequest = async (req, res) => {
         });
     }
 };
-
-const submitSolution = async (req,res) => {
+const submitSolution = async (req, res) => {
     try {
-
-        const {problemId} = req.params;
-        const {solutionVideoUrl , solutionText} = req.body;
+        const { problemId } = req.params;
+        const { solutionVideoUrl, solutionText } = req.body;
         const userId = req.user._id;
-        const problem = await findProblemWithValidation(problemId , res);
-        if(problem.solutions.some(sol => sol.solverId.toString() === userId.toString())){
+
+        // Basic validation
+        if (!solutionVideoUrl || !solutionText) {
             return res.status(400).json({
-                success:false,
-                message: "you have already submitted a solution for this problem"
-            })
+                success: false,
+                message: "Solution video URL and solution text are required",
+            });
         }
-        const solution = {
-            solverId : userId,
-            solutionVideoUrl: solutionVideoUrl,
-            solutionText: solutionText,
-            accepted:false,
+
+        // Fetch problem
+        const problem = await findProblemWithValidation(problemId, res);
+        if (!problem) return;
+
+        // Prevent duplicate submission
+        const alreadySubmitted = problem.solutions.some(
+            (sol) => sol.solverId.toString() === userId.toString()
+        );
+
+        if (alreadySubmitted) {
+            return res.status(400).json({
+                success: false,
+                message: "You have already submitted a solution for this problem",
+            });
         }
-        problem.solutions.push(solution);
-        const savedProblem = await problem.save();
-        await savedProblem.populate("issuedBy", "username email _id");
-        await savedProblem.populate("accessPending.solverId", "username email _id");
-        await savedProblem.populate("attempters.userId", "username email _id");
-        await savedProblem.populate("solutions.solverId", "username email _id");
-        const user = await findUserWithValidation(userId , res);
-        
-        const userSolution = {
-            problemId: savedProblem._id,
-            solutionVideoUrl: solutionVideoUrl,
-            solutionText: solutionText,
+
+        // Add solution to problem
+        problem.solutions.push({
+            solverId: userId,
+            solutionVideoUrl,
+            solutionText,
             accepted: false,
-        }
+        });
 
-        user.solutions.push(userSolution);
-        const savedUser =await user.save();
+        const savedProblem = await problem.save();
 
-        return res.json({
-            success: true ,
-            problem : savedProblem ,
+        // Populate required fields
+        await savedProblem.populate([
+            { path: "issuedBy", select: "username email _id" },
+            { path: "accessPending.solverId", select: "username email _id" },
+            { path: "attempters.userId", select: "username email _id" },
+            { path: "solutions.solverId", select: "username email _id" },
+        ]);
+
+        // Fetch user
+        const user = await findUserWithValidation(userId, res);
+        if (!user) return;
+
+        // Add solution reference to user
+        user.solutions.push({
+            problemId: savedProblem._id,
+            solutionVideoUrl,
+            solutionText,
+            accepted: false,
+        });
+
+        const savedUser = await user.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Solution submitted successfully",
+            problem: savedProblem,
             user: savedUser,
-        })
-        
+        });
     } catch (error) {
-        console.error("error submitting solution: " , error.message);
-        res.status(500).json({
-            success:false , 
-            message: "internal server error during solution submission"
-        })
+        console.error("Error submitting solution:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error during solution submission",
+        });
     }
-}
+};
 
 module.exports = {
     issueProblem,
@@ -467,5 +544,5 @@ module.exports = {
     grantSolution,
     acceptRequest,
     rejectRequest,
-    submitSolution
+    submitSolution,
 };

@@ -1,13 +1,12 @@
 import axios from "axios";
 import {
-    Award,
     Bell,
     CheckCircle,
     Clock,
     Code,
     PlusCircle,
     Search,
-    Users,
+    Users
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -19,15 +18,17 @@ export default function Dashboard() {
     const dispatch = useDispatch();
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [notifications, setNotifications] = useState([]);
     const [activeTab, setActiveTab] = useState("problems");
     const [searchQuery, setSearchQuery] = useState("");
+    
     const [stats, setStats] = useState({
         problemsSolved: 0,
         problemsInProgress: 0,
         problemsIssued: 0,
         connections: 0,
     });
+
+    
 
     useEffect(() => {
         // Mock data fetch - replace with actual API call
@@ -214,28 +215,7 @@ export default function Dashboard() {
                     connections: user.contact.length,
                 });
 
-                // Mock notifications
-                setNotifications([
-                    {
-                        id: 1,
-                        message: "Your solution was accepted!",
-                        read: false,
-                        timestamp: "2025-04-13T10:30:00Z",
-                    },
-                    {
-                        id: 2,
-                        message:
-                            "New problem available that matches your skills",
-                        read: false,
-                        timestamp: "2025-04-12T15:45:00Z",
-                    },
-                    {
-                        id: 3,
-                        message: "User devpro wants to connect",
-                        read: true,
-                        timestamp: "2025-04-10T09:20:00Z",
-                    },
-                ]);
+                
 
                 setLoading(false);
             } catch (error) {
@@ -300,30 +280,6 @@ export default function Dashboard() {
                                 DevSolve Dashboard
                             </h1>
                         </div>
-
-                        <div className="flex items-center">
-                            <div className="relative mr-4">
-                                <Bell
-                                    size={20}
-                                    className="text-slate-400 hover:text-white cursor-pointer transition-colors"
-                                />
-                                {notifications.filter((n) => !n.read).length >
-                                    0 && (
-                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                                        {
-                                            notifications.filter((n) => !n.read)
-                                                .length
-                                        }
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="flex items-center">
-                                <span className="font-medium text-white">
-                                    {userData.username}
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -372,20 +328,6 @@ export default function Dashboard() {
                             </p>
                         </div>
                     </div>
-
-                    <div className="bg-slate-800 rounded-xl shadow-lg p-6 flex items-center border border-slate-700">
-                        <div className="rounded-full bg-purple-500/20 p-3 mr-4">
-                            <Users size={24} className="text-purple-400" />
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-medium text-slate-400">
-                                Connections
-                            </h3>
-                            <p className="text-2xl text-white font-bold">
-                                {stats.connections}
-                            </p>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Tab Navigation */}
@@ -406,19 +348,7 @@ export default function Dashboard() {
                                 </span>
                             </button>
 
-                            <button
-                                className={`px-6 py-4 font-medium text-sm transition-colors ${
-                                    activeTab === "network"
-                                        ? "text-blue-400 border-b-2 border-blue-400"
-                                        : "text-slate-400 hover:text-white"
-                                }`}
-                                onClick={() => setActiveTab("network")}
-                            >
-                                <span className="flex items-center">
-                                    <Users size={16} className="mr-2" />
-                                    Network
-                                </span>
-                            </button>
+                            
 
                             
                         </nav>

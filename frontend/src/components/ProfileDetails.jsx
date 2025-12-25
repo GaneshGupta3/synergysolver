@@ -54,7 +54,6 @@ export default function ProfileDetails() {
                     );
                     const userData = response.data;
                     console.log("Fetched user data:", userData);
-                    console.log(userData);
                     setUser(userData);
                 } catch (error) {
                     console.error("Error fetching user data:", error);
@@ -63,7 +62,7 @@ export default function ProfileDetails() {
                 }
             } else {
                 setUser(sliceUser);
-                setLoading(false); // <- Don't forget to stop loading in this case too
+                setLoading(false);
             }
         };
 
@@ -71,30 +70,55 @@ export default function ProfileDetails() {
     }, [sliceUser, userId]);
 
     const handleLogout = async () => {
-        dispatch(logoutAsync()); // Calls API & updates Redux state
+        dispatch(logoutAsync());
         navigate("/");
     };
 
     const handleEditSkills = async () => {
-        const skills = sliceUser.skills;
+        const currentSkills = user.skills;
+        const originalSkills = sliceUser.skills;
+        
+        // Compare arrays properly by sorting and stringifying
+        const hasChanged = JSON.stringify([...currentSkills].sort()) !== JSON.stringify([...originalSkills].sort());
+        
+        if (!hasChanged) {
+            console.log("No changes made to skills.");
+            return;
+        }
+
         try {
-            if (skills === sliceUser.skills) {
-                console.log("No changes made to skills.");
-                return;
-            }
             const response = await axios.post(
                 `${import.meta.env.VITE_API_BASE_URL}/api/user/editSkills`,
-                { skills },
+                { skills: currentSkills },
                 { withCredentials: true }
             );
-            console.log("Skills added successfully:", response.data);
+            console.log("Skills updated successfully:", response.data);
+            
+            // Update Redux store with new data
+            if (response.data && response.data.data) {
+                dispatch(authSliceActions.login(response.data.data));
+                setUser(response.data.data);
+            }
         } catch (error) {
-            console.error("Error adding skills:", error);
+            console.error("Error updating skills:", error);
+            alert("Failed to update skills. Please try again.");
+            // Revert local changes on error
+            setUser((prevUser) => ({
+                ...prevUser,
+                skills: originalSkills,
+            }));
         }
     };
 
     const addProjects = async (event) => {
         event.preventDefault();
+        
+        // Validate inputs
+        if (!title.current.value.trim() || !description.current.value.trim() || !url.current.value.trim()) {
+            alert("Please fill in all fields");
+            return;
+        }
+
         try {
             const newProject = {
                 title: title.current.value.trim(),
@@ -102,71 +126,71 @@ export default function ProfileDetails() {
                 link: url.current.value.trim(),
             };
 
-            // Update state optimistically, but don't use it right away
-            setUser((prevState) => ({
-                ...prevState,
-                pastProjects: [...prevState.pastProjects, newProject],
-            }));
-
-            // Send the updated projects to the backend
             const response = await axios.post(
-                `${
-                    import.meta.env.VITE_API_BASE_URL
-                }/api/user/editPastProjects`,
-                { pastProjects: [...user.pastProjects, newProject] }, // send updated projects
+                `${import.meta.env.VITE_API_BASE_URL}/api/user/editPastProjects`,
+                { pastProjects: [...user.pastProjects, newProject] },
                 { withCredentials: true }
             );
 
-            // Update the state with the response data (backend's confirmation)
+            // Update local state and Redux
             setUser(response.data.data);
-
-            // Dispatch login action
-            dispatch(authSliceActions.login(response.data.data)); // Login with the updated user data
-            console.log(response);
-            if (response.status == 200) {
-                title.current.value = "";
-                description.current.value = "";
-                url.current.value = "";
-                setShowProjectForm(false);
-            }
+            dispatch(authSliceActions.login(response.data.data));
+            
+            // Clear form and close modal
+            title.current.value = "";
+            description.current.value = "";
+            url.current.value = "";
+            setShowProjectForm(false);
+            
+            console.log("Project added successfully");
         } catch (error) {
-            console.log("Error in adding project: ", error);
+            console.error("Error adding project:", error);
+            alert("Failed to add project. Please try again.");
         }
     };
 
     const removeProjects = async (project) => {
         const updatedProjects = user.pastProjects.filter((p) => p !== project);
-        if (sliceUser.pastProjects === updatedProjects) {
-            console.log("No changes made to Past Projects");
-            return;
-        }
+        
         try {
             const response = await axios.post(
-                `${
-                    import.meta.env.VITE_API_BASE_URL
-                }/api/user/editPastProjects`,
+                `${import.meta.env.VITE_API_BASE_URL}/api/user/editPastProjects`,
                 { pastProjects: updatedProjects },
                 { withCredentials: true }
             );
+            
             console.log("Project removed successfully:", response.data);
+            
+            // Update both local state and Redux
             setUser((prevUser) => ({
                 ...prevUser,
                 pastProjects: updatedProjects,
             }));
+            
+            if (response.data && response.data.data) {
+                dispatch(authSliceActions.login(response.data.data));
+            }
         } catch (error) {
             console.error("Error removing project:", error);
+            alert("Failed to remove project. Please try again.");
         }
     };
 
     const addSkillsLocally = () => {
         const newSkill = inputSkill.current.value.trim();
-        if (newSkill) {
-            setUser((prevUser) => ({
-                ...prevUser,
-                skills: [...prevUser.skills, newSkill],
-            }));
+        if (!newSkill) return;
+        
+        if (user.skills.includes(newSkill)) {
+            alert("Skill already exists!");
             inputSkill.current.value = "";
+            return;
         }
+        
+        setUser((prevUser) => ({
+            ...prevUser,
+            skills: [...prevUser.skills, newSkill],
+        }));
+        inputSkill.current.value = "";
     };
 
     const removeSkillLocally = (skill) => {
@@ -191,7 +215,13 @@ export default function ProfileDetails() {
         );
     }
 
-    // Use mock data for demonstration
+    if (!user) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="text-xl font-semibold">User not found</div>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -618,7 +648,7 @@ export default function ProfileDetails() {
                             </div>
 
                             {/* Achievements Section */}
-                            <div className="mb-6">
+                            {/* <div className="mb-6">
                                 <div
                                     className="flex items-center justify-between cursor-pointer group hover:bg-slate-700/30 p-2 rounded-lg transition-all"
                                     onClick={() =>
@@ -687,7 +717,7 @@ export default function ProfileDetails() {
                                         )}
                                     </div>
                                 )}
-                            </div>
+                            </div> */}
 
                             {/* Contacts Section */}
                             <div className="mb-6">

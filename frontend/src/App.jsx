@@ -13,6 +13,7 @@ import SignUpCard from "./components/SignupCard/SignUpCard";
 import Layout from "./components/layout/Layout";
 import Problems from "./components/problems/Problems";
 import ProfilePage from "./components/profile/ProfilePage";
+import Rankings from "./components/Rankings";
 function App() {
     return (
         <>
@@ -22,6 +23,7 @@ function App() {
                         <Route path="/" element={<Home />}></Route>
                         <Route path="/login" element={<LoginCard />}></Route>
                         <Route path="/signup" element={<SignUpCard />}></Route>
+                        <Route path="/rankings" element={<Rankings />}></Route>
                         <Route
                             path="/profile"
                             element={<AuthInitializer><ProfilePage /></AuthInitializer>}

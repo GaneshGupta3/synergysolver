@@ -64,7 +64,6 @@ const registerController = async(req ,res)=>{
 }
 
 const logoutController = (req, res) => {
-    console.log("Logging out - NODE_ENV:", process.env.NODE_ENV);
 
     const cookieOptions = {
         path: "/",

@@ -8,6 +8,7 @@ import logoImg from "../../assets/blacklogo.png";
 import { useLocation } from "react-router-dom";
 import { Code } from "lucide-react";
 import { useUser } from "../../hooks/useUser";
+import MobileNavLink from "../MobileNavLink";
 
 const Navbar = ({ transparent }) => {
     const Location = useLocation();
@@ -100,12 +101,12 @@ const Navbar = ({ transparent }) => {
                                     navigateTo="dashboard"
                                 />
                             )}
-                            {isLoggedIn && (
+                            {/* {isLoggedIn && (
                                 <NavLinkStyled
                                     text="Discussion"
                                     navigateTo="chatpage"
                                 />
-                            )}
+                            )} */}
                             <NavLinkStyled
                                 text="Problems"
                                 navigateTo="problems"
@@ -447,23 +448,6 @@ const NavLinkStyled = ({ text, navigateTo }) => {
             {text}
             <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 group-hover:w-3/4 transition-all duration-300 rounded-full"></span>
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </button>
-    );
-};
-
-// Mobile NavLink Component
-const MobileNavLink = ({ text, navigateTo, onClick }) => {
-    const navigate = useNavigate();
-
-    return (
-        <button
-            onClick={() => {
-                navigate(`/${navigateTo}`);
-                onClick();
-            }}
-            className="w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700/30 rounded-xl font-medium transition-all duration-300 border border-transparent hover:border-gray-600"
-        >
-            {text}
         </button>
     );
 };

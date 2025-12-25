@@ -131,47 +131,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Challenge Categories */}
-      <section id="challenges" className="py-20 bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Explore Problem Categories
-            </h2>
-            <p className="text-xl text-gray-300">
-              Choose your path and start building real-world experience
-            </p>
-          </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {challengeCategories.map((category, index) => (
-              <div key={index} className="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-gray-600 transition-colors group cursor-pointer">
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center">
-                    <span className="text-4xl mr-4">{category.icon}</span>
-                    <div>
-                      <h3 className="text-2xl font-bold text-white group-hover:text-purple-400 transition-colors">
-                        {category.title}
-                      </h3>
-                      <p className="text-gray-400">{category.description}</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="text-gray-400 group-hover:text-white transition-colors" />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <span className="text-white font-semibold">{category.problems} Problems</span>
-                    <span className="text-gray-400">•</span>
-                    <span className="text-gray-400">{category.level}</span>
-                  </div>
-                  <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${category.color}`}></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-purple-900 to-blue-900">
@@ -185,7 +145,7 @@ function Home() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to={"/signup"} className="bg-white text-purple-900 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-colors">
-              Start Free Today
+              Start Today
             </Link>
             <Link to="/problems" className="border border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/10 transition-colors">
               Explore Challenges
