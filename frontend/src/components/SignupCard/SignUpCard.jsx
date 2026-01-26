@@ -11,6 +11,7 @@ import StyledButton from "../StyledButton/StyledButton.jsx";
 const SignUpCard = () => {
     const username = useRef();
     const email = useRef();
+    const role = useRef();
     const password = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -112,7 +113,7 @@ const SignUpCard = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, #2d3748, #1a202c)'}}>
+        <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, #2d3748, #1a202c)' }}>
             <div className="w-full max-w-md px-6">
                 <div className="bg-white/10 mt-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8">
                     <div className="text-center mb-8">
@@ -142,6 +143,28 @@ const SignUpCard = () => {
                                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
                             />
                         </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-white/90 mb-2">
+                                Role
+                            </label>
+                            <select
+                                ref={role}
+                                required
+                                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+                            >
+                                <option value="" className="text-black">
+                                    Select Role
+                                </option>
+                                <option value="user" className="text-black">
+                                    Student
+                                </option>
+                                <option value="industry-expert" className="text-black">
+                                    Industry expert
+                                </option>
+                            </select>
+                        </div>
+
 
                         <div>
                             <label className="block text-sm font-medium text-white/90 mb-2">Password</label>
